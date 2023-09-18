@@ -4,7 +4,7 @@ _realname=openssl
 pkgbase=mingw-w64-${_realname}
 pkgname=("${MINGW_PACKAGE_PREFIX}-${_realname}")
 pkgver=3.1.2
-pkgrel=1
+pkgrel=9000
 pkgdesc="The Open Source toolkit for Secure Sockets Layer and Transport Layer Security (mingw-w64)"
 arch=('any')
 mingw_arch=('mingw32' 'mingw64' 'ucrt64' 'clang64' 'clang32' 'clangarm64')
@@ -86,7 +86,7 @@ build() {
     --libdir=lib \
     --openssldir=etc/ssl \
     ${_mingw} \
-    no-shared \
+    shared \
     no-module \
     zlib-dynamic \
     enable-camellia \
