@@ -110,7 +110,7 @@ check() {
 package() {
   cd "${srcdir}/build-${MSYSTEM}"
 
-  make install DESTDIR="${pkgdir}"
+  make install_sw DESTDIR="${pkgdir}"
 
   install -Dm644 "${srcdir}/${_realname}-${pkgver}/LICENSE.txt" "${pkgdir}${MINGW_PREFIX}/share/licenses/${_realname}/LICENSE"
 }
