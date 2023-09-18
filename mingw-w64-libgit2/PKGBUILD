@@ -1,0 +1,62 @@
+# Maintainer: Martell Malone <martellmalone@gmail.com>
+
+_realname=libgit2
+pkgbase=mingw-w64-${_realname}
+pkgname="${MINGW_PACKAGE_PREFIX}-${_realname}"
+pkgver=1.7.1
+pkgrel=9000
+pkgdesc='A linkable library for Git (mingw-w64)'
+arch=('any')
+url='https://github.com/libgit2/libgit2'
+license=('GPL2' 'custom')
+options=('strip')
+depends=("${MINGW_PACKAGE_PREFIX}-libssh2"
+         "${MINGW_PACKAGE_PREFIX}-zlib")
+makedepends=("${MINGW_PACKAGE_PREFIX}-cmake" "${MINGW_PACKAGE_PREFIX}-gcc")
+source=(${_realname}-${pkgver}.tar.gz::"https://github.com/libgit2/libgit2/archive/v${pkgver}.tar.gz"
+        "0001-libgit2-1.4.2-rc-filename.patch"
+        "0002-cmake-fix-openssl-build-on-win32.patch"
+        "winlibs.patch")
+noextract=(${_realname}-${pkgver}.tar.gz)
+sha256sums=('17d2b292f21be3892b704dddff29327b3564f96099a1c53b00edc23160c71327'
+            'bdffd718bbf178817d5cfd80f9d5a9706b9c6ff981b1631978ae02657cbf2a55'
+            '4329cef22a301adf67652ac00372e08077fe4dd005f7036751be413dda6ac156'
+            'SKIP')
+
+prepare() {
+  tar --exclude tests/resources/testrepo-worktree/link_to_new.txt -zxf ${_realname}-${pkgver}.tar.gz
+  cd ${_realname}-${pkgver}
+
+  patch -Np1 -i "${srcdir}/0001-libgit2-1.4.2-rc-filename.patch"
+
+  # https://github.com/libgit2/libgit2/pull/6626
+  patch -Np1 -i "${srcdir}/0002-cmake-fix-openssl-build-on-win32.patch"
+
+  patch -p1 -i ${srcdir}/winlibs.patch
+}
+
+build() {
+  [[ -d "${srcdir}"/build-${MINGW_CHOST} ]] && rm -rf "${srcdir}"/build-${MINGW_CHOST}
+  mkdir -p "${srcdir}"/build-${MINGW_CHOST} && cd "${srcdir}"/build-${MINGW_CHOST}
+
+  MSYS2_ARG_CONV_EXCL="-DCMAKE_INSTALL_PREFIX=;-DCMAKE_PREFIX_PATH=" \
+  ${MINGW_PREFIX}/bin/cmake.exe \
+    -G"MSYS Makefiles" \
+    -DCMAKE_BUILD_TYPE="release" \
+    -DBUILD_SHARED_LIBS=OFF \
+    -DCMAKE_INSTALL_PREFIX=${MINGW_PREFIX} \
+    -DCMAKE_PREFIX_PATH=${MINGW_PREFIX} \
+    -DUSE_HTTPS=OpenSSL \
+    -DUSE_SSH=ON \
+    -DUSE_ICONV=ON \
+    -DREGEX_BACKEND=builtin \
+    -DBUILD_TESTS=OFF \
+    ../${_realname}-${pkgver}
+
+  make
+}
+
+package() {
+  cd ${srcdir}/build-${MINGW_CHOST}
+  make DESTDIR=${pkgdir} install
+}
