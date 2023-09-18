@@ -1,0 +1,103 @@
+# Maintainer: Alexey Pavlov <Alexpux@gmail.com>
+# Contributer: Zach Bacon <11doctorwhocanada@gmail.com>
+# Contributer: wirx6 <wirx654@gmail.com>
+
+_realname=ffmpeg
+pkgbase="mingw-w64-${_realname}"
+pkgname="${MINGW_PACKAGE_PREFIX}-${_realname}"
+pkgver=6.0
+pkgrel=9000
+pkgdesc="Complete and free Internet live audio and video broadcasting solution (mingw-w64)"
+arch=('any')
+url="https://ffmpeg.org/"
+license=('GPL')
+options=('staticlibs' 'strip')
+depends=("${MINGW_PACKAGE_PREFIX}-bzip2"
+        "${MINGW_PACKAGE_PREFIX}-lame"
+        "${MINGW_PACKAGE_PREFIX}-libvorbis"
+        "${MINGW_PACKAGE_PREFIX}-libvpx"
+        "${MINGW_PACKAGE_PREFIX}-x264"
+        "${MINGW_PACKAGE_PREFIX}-xvidcore"
+        "${MINGW_PACKAGE_PREFIX}-zlib")
+makedepends=("${MINGW_PACKAGE_PREFIX}-gcc"
+             "${MINGW_PACKAGE_PREFIX}-pkgconf"
+             "${MINGW_PACKAGE_PREFIX}-nasm")
+source=(https://ffmpeg.org/releases/${_realname}-${pkgver}.tar.xz{,.asc}
+        "0002-gcc-12.patch"
+        "0001-lavu-vulkan-fix-handle-type-for-32-bit-targets.patch"
+        https://github.com/FFmpeg/FFmpeg/commit/f9620d74cd49c35223304ba41e28be6144e45783.patch
+        https://github.com/FFmpeg/FFmpeg/commit/effadce6c756247ea8bae32dc13bb3e6f464f0eb.patch
+        https://github.com/FFmpeg/FFmpeg/commit/814178f92647be2411516bbb82f48532373d2554.patch)
+validpgpkeys=('FCF986EA15E6E293A5644F10B4322F04D67658D8')
+sha256sums=('57be87c22d9b49c112b6d24bc67d42508660e6b718b3db89c44e47e289137082'
+            'SKIP'
+            '84b9fcaa188eef15201a105a44c53d647e4fb800a5032336e0948d6bed2cbc1b'
+            'bbc7e7b91886a8ac037d8e70692186ee4b48c37b4f1d82b81af8a54463b24803'
+            '146d397029d8980224c0e805646bc02707b54029fff8a3e62c1565672091aabc'
+            '206f4d8437b21f6197ffc444c86d0504892a5c2137cb227b4af1c1e8bf2c426c'
+            'SKIP')
+
+# Helper macros to help make tasks easier #
+apply_patch_with_msg() {
+  for _fname in "$@"
+  do
+    msg2 "Applying ${_fname}"
+    patch -Nbp1 -i "${srcdir}"/${_fname}
+  done
+}
+
+prepare() {
+  cd "${srcdir}/${_realname}-${pkgver}"
+
+  apply_patch_with_msg 0002-gcc-12.patch
+
+  # https://trac.ffmpeg.org/ticket/9983
+  # https://ffmpeg.org/pipermail/ffmpeg-devel/2023-March/307142.html
+  apply_patch_with_msg 0001-lavu-vulkan-fix-handle-type-for-32-bit-targets.patch
+
+  apply_patch_with_msg f9620d74cd49c35223304ba41e28be6144e45783.patch
+
+  # https://github.com/msys2/MINGW-packages/issues/17946
+  apply_patch_with_msg effadce6c756247ea8bae32dc13bb3e6f464f0eb.patch
+
+  # Fix bug in 6.0.0 with enable-hardcoded-tables
+  apply_patch_with_msg 814178f92647be2411516bbb82f48532373d2554.patch
+}
+
+build() {
+  [[ -d "${srcdir}/build-${MINGW_CHOST}" ]] && rm -rf "${srcdir}/build-${MINGW_CHOST}"
+  mkdir -p "${srcdir}/build-${MINGW_CHOST}" && cd "${srcdir}/build-${MINGW_CHOST}"
+
+  ../${_realname}-${pkgver}/configure \
+    --prefix=${MINGW_PREFIX} \
+    --target-os=mingw32 \
+    --arch=${CARCH%%-*} \
+    --cc=${CC} \
+    --cxx=${CXX} \
+    --disable-debug \
+    --enable-static \
+    --enable-dxva2 \
+    --enable-d3d11va \
+    --disable-shared \
+    --enable-gpl \
+    --enable-libmp3lame \
+    --enable-libx264 \
+    --enable-libxvid \
+    --enable-libvorbis \
+    --enable-libvpx \
+    --enable-hardcoded-tables \
+    --enable-version3 \
+    --enable-zlib \
+    --disable-lzma \
+    --disable-doc \
+    --extra-libs="$(${PKG_CONFIG:-pkg-config} --libs-only-l --static vorbis)"
+
+  make
+}
+
+package() {
+  cd "${srcdir}/build-${MINGW_CHOST}"
+  make DESTDIR="${pkgdir}" install
+  local PREFIX_DEPS=$(cygpath -am ${MINGW_PREFIX})
+  find ${pkgdir}${MINGW_PREFIX}/lib/pkgconfig -name *.pc -exec sed -i -e"s|${PREFIX_DEPS}|${MINGW_PREFIX}|g" {} \;
+}
