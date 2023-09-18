@@ -58,7 +58,7 @@ for package in "${packages[@]}"; do
     execute 'Building binary' makepkg-mingw --noconfirm --noprogressbar --nocheck --skippgpcheck --syncdeps --rmdeps --cleanbuild
     #MINGW_ARCH=mingw64 execute 'Building source' makepkg-mingw --noconfirm --noprogressbar --skippgpcheck --allsource
     execute 'List output contents' ls -ltr
-    execute 'Installing' yes:pacman --noprogressbar --upgrade *.pkg.tar.xz
+    execute 'Installing' yes:pacman --noprogressbar --upgrade --noconfirm *.pkg.tar.xz
     execute 'Checking Binaries' find ./pkg -regex ".*\.\(exe\|dll\|a\|pc\)"
     execute 'Copying binary package' mv *.pkg.tar.xz ../artifacts
     #execute 'Copying source package' mv *.src.tar.gz ../sourcepkg
