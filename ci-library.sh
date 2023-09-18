@@ -160,7 +160,7 @@ create_build_references() {
 # Add packages to repository
 create_pacman_repository() {
     local name="${1}"
-    _download_previous "${name}".{db,files}{,.tar.xz}
+    _download_previous "${name}".{db,files}{,.tar.xz} || return 1
     repo-add "${name}.db.tar.xz" *.pkg.tar.xz
 }
 
