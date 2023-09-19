@@ -1,0 +1,55 @@
+# Maintainer: Alexey Pavlov <alexpux@gmail.com>
+# Contributor: Renato Silva <br.renatosilva@gmail.com>
+
+_realname=pixman
+pkgbase=mingw-w64-${_realname}
+pkgname="${MINGW_PACKAGE_PREFIX}-${_realname}"
+pkgver=0.42.2
+pkgrel=9000
+pkgdesc="The pixel-manipulation library for X and cairo (mingw-w64)"
+arch=('any')
+mingw_arch=('mingw32' 'mingw64' 'ucrt64' 'clang64' 'clang32' 'clangarm64')
+url="https://gitlab.freedesktop.org/pixman/pixman"
+license=('spdx:MIT')
+makedepends=("${MINGW_PACKAGE_PREFIX}-cc"
+             "${MINGW_PACKAGE_PREFIX}-pkg-config"
+             "${MINGW_PACKAGE_PREFIX}-libpng"
+             "${MINGW_PACKAGE_PREFIX}-meson"
+             "${MINGW_PACKAGE_PREFIX}-ninja")
+depends=("${MINGW_PACKAGE_PREFIX}-gcc-libs")
+source=("https://xorg.freedesktop.org/releases/individual/lib/pixman-${pkgver}.tar.xz")
+sha256sums=('5747d2ec498ad0f1594878cc897ef5eb6c29e91c53b899f7f71b506785fc1376')
+
+prepare() {
+  cd "${srcdir}/${_realname}-${pkgver}"
+}
+
+build() {
+  mkdir -p "${srcdir}/build-${MINGW_CHOST}"
+  cd "${srcdir}/build-${MINGW_CHOST}"
+
+  MSYS2_ARG_CONV_EXCL="--prefix=" \
+  meson \
+    --prefix="${MINGW_PREFIX}" \
+    --buildtype plain \
+    -Ddefault_library=both \
+    -Dgtk=disabled \
+    -Da64-neon=disabled \
+    ../${_realname}-${pkgver}
+
+  meson compile
+}
+
+check() {
+  cd "${srcdir}/build-${MINGW_CHOST}"
+
+  meson test
+}
+
+package() {
+  cd "${srcdir}/build-${MINGW_CHOST}"
+
+  DESTDIR="${pkgdir}" meson install
+
+  install -Dm644 "${srcdir}/${_realname}-${pkgver}/COPYING" "${pkgdir}${MINGW_PREFIX}/share/licenses/${_realname}/COPYING"
+}
