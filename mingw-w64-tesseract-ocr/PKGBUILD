@@ -1,5 +1,4 @@
 # Maintainer: Alexey Pavlov <alexpux@gmail.com>
-# Maintainer: Ray Donnelly <mingw.android@gmail.com>
 
 _realname=tesseract-ocr
 pkgbase=mingw-w64-${_realname}
@@ -33,18 +32,15 @@ build() {
   cp -r "${srcdir}/tesseract-${pkgver}" "${srcdir}/build-${MSYSTEM}"
   cd "${srcdir}/build-${MSYSTEM}"
 
-  local -a extra_config
-  if check_option "debug" "y"; then
-    extra_config+=( --enable-debug )
-  fi
-
-  ./configure \
+  ../tesseract-${pkgver}/configure \
     --build=${MINGW_CHOST} \
     --host=${MINGW_CHOST} \
     --target=${MINGW_CHOST} \
     --prefix=${MINGW_PREFIX} \
+    --enable-static \
+    --disable-shared \
     --disable-openmp \
-    "${extra_config[@]}"
+    LIBLEPT_HEADERSDIR=${MINGW_PREFIX}/include
 
   make
   #make training
