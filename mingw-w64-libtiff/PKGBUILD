@@ -48,7 +48,9 @@ build() {
     --disable-lerc \
     --disable-libdeflate \
     --disable-lzma \
-    --disable-webp
+    --disable-webp \
+    --disable-jpeg \
+    --disable-zstd
 
   make
 
@@ -66,7 +68,9 @@ build() {
     --disable-lerc \
     --disable-libdeflate \
     --disable-lzma \
-    --disable-webp
+    --disable-webp \
+    --disable-jpeg \
+    --disable-zstd
 
   make
 }
