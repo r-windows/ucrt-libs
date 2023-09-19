@@ -1,0 +1,102 @@
+_realname=poppler
+pkgbase=mingw-w64-${_realname}
+pkgname="${MINGW_PACKAGE_PREFIX}-${_realname}"
+pkgver=23.08.0
+pkgrel=9000
+pkgdesc="PDF rendering library based on xpdf 3.0 (mingw-w64)"
+arch=('any')
+url="https://poppler.freedesktop.org/"
+license=("GPL")
+makedepends=("${MINGW_PACKAGE_PREFIX}-cmake"
+             "${MINGW_PACKAGE_PREFIX}-gcc"
+             "${MINGW_PACKAGE_PREFIX}-glib2"
+             "${MINGW_PACKAGE_PREFIX}-pkg-config")
+depends=("${MINGW_PACKAGE_PREFIX}-cairo"
+         "${MINGW_PACKAGE_PREFIX}-freetype"
+         "${MINGW_PACKAGE_PREFIX}-lcms2"
+         "${MINGW_PACKAGE_PREFIX}-libjpeg"
+         "${MINGW_PACKAGE_PREFIX}-libpng"
+         "${MINGW_PACKAGE_PREFIX}-libtiff"
+         "${MINGW_PACKAGE_PREFIX}-openjpeg2"
+         "${MINGW_PACKAGE_PREFIX}-poppler-data"
+         "${MINGW_PACKAGE_PREFIX}-zlib")
+source=(https://poppler.freedesktop.org/${_realname}-${pkgver}.tar.xz{,.sig}
+        '0001-nopython-generate-enums.patch')
+sha256sums=('4a4bf7fc903b9f1a2ab7d04b7c5d8220db9bc6261cc73fdb9a826dc272f49aa8'
+            'SKIP'
+            '315356263b5ebee5431a2e079ac76492a8919a04a798f6c6d53c64f44b433db6')
+validpgpkeys=('CA262C6C83DE4D2FB28A332A3A6A4DB839EAA6D7')
+
+prepare() {
+  cd ${_realname}-${pkgver}
+
+  patch -p1 -i "${srcdir}/0001-nopython-generate-enums.patch"
+}
+
+build() {
+
+mkdir -p ${srcdir}/build-shared && cd ${srcdir}/build-shared
+
+  CXXFLAGS=" -Wno-deprecated-declarations -Wno-ignored-attributes" \
+  MSYS2_ARG_CONV_EXCL="-DCMAKE_INSTALL_PREFIX=" \
+  "${MINGW_PREFIX}/bin/cmake.exe" \
+    -Wno-dev \
+    -G"Ninja" \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_PREFIX="${MINGW_PREFIX}" \
+    -DBUILD_SHARED_LIBS=ON \
+    -DCMAKE_CXX_STANDARD_LIBRARIES="$(pkg-config --libs-only-l --static cairo libtiff-4) -lfreetype -lWinspool -lMsimg32 -lComdlg32" \
+    -DENABLE_UNSTABLE_API_ABI_HEADERS=OFF \
+    -DENABLE_BOOST=OFF \
+    -DENABLE_GTK_DOC=OFF \
+    -DENABLE_GLIB=OFF \
+    -DENABLE_QT5=OFF \
+    -DENABLE_QT6=OFF \
+    -DENABLE_NSS3=OFF \
+    -DENABLE_LIBCURL=OFF \
+    -DBUILD_GTK_TESTS=OFF \
+    -DENABLE_CMS=lcms2 \
+    -DENABLE_UTILS=ON \
+    ../${_realname}-${pkgver}
+
+  ${MINGW_PREFIX}/bin/cmake.exe --build ./
+
+
+  mkdir -p ${srcdir}/build-static && cd ${srcdir}/build-static
+  #rm -fv ${MINGW_PREFIX}/lib/*.dll.a
+
+  export CPPFLAGS="-DOPJ_STATIC -Dpoppler_cpp_EXPORTS"
+  export PKG_CONFIG="/${MINGW_ARCH}/bin/pkg-config --static"
+
+  CFLAGS=" $CPPFLAGS" \
+  CXXFLAGS=" -Wno-deprecated-declarations -Wno-ignored-attributes $CPPFLAGS" \
+  MSYS2_ARG_CONV_EXCL="-DCMAKE_INSTALL_PREFIX=" \
+  "${MINGW_PREFIX}/bin/cmake.exe" \
+    -Wno-dev \
+    -G"Ninja" \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_PREFIX="${MINGW_PREFIX}" \
+    -DBUILD_SHARED_LIBS=OFF \
+    -DCMAKE_CXX_STANDARD_LIBRARIES="$(pkg-config --libs-only-l --static cairo libtiff-4) -lfreetype -lWinspool -lMsimg32 -lComdlg32" \
+    -DENABLE_UNSTABLE_API_ABI_HEADERS=OFF \
+    -DENABLE_BOOST=OFF \
+    -DENABLE_GTK_DOC=OFF \
+    -DENABLE_GLIB=OFF \
+    -DENABLE_QT5=OFF \
+    -DENABLE_QT6=OFF \
+    -DENABLE_NSS=OFF \
+    -DENABLE_LIBCURL=OFF \
+    -DBUILD_GTK_TESTS=OFF \
+    -DENABLE_CMS=lcms2 \
+    -DENABLE_UTILS=ON \
+    ../${_realname}-${pkgver}
+
+  ${MINGW_PREFIX}/bin/cmake.exe --build ./
+}
+
+package() {
+  cd "${srcdir}/build-shared"
+  DESTDIR="${pkgdir}" ${MINGW_PREFIX}/bin/cmake.exe --build ./ --target install
+  cd "${srcdir}/build-static"
+  DESTDIR="${pkgdir}" ${MINGW_PREFIX}/bin/cmake.exe --build ./ --target install
+}
