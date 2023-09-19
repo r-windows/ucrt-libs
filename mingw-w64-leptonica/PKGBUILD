@@ -1,0 +1,65 @@
+# Maintainer: Alexey Pavlov <alexpux@gmail.com>
+
+_realname=leptonica
+pkgbase=mingw-w64-${_realname}
+pkgname=("${MINGW_PACKAGE_PREFIX}-${_realname}")
+pkgver=1.83.1
+pkgrel=9000
+pkgdesc="An open source C library for efficient image processing and image analysis operations (mingw-w64)"
+arch=('any')
+mingw_arch=('mingw32' 'mingw64' 'ucrt64' 'clang64' 'clang32' 'clangarm64')
+url='http://www.leptonica.org'
+license=("spdx:BSD-2-Clause")
+makedepends=("${MINGW_PACKAGE_PREFIX}-cc" "${MINGW_PACKAGE_PREFIX}-autotools")
+checkdepends=("${MINGW_PACKAGE_PREFIX}-gnuplot")
+depends=(${MINGW_PACKAGE_PREFIX}-giflib
+         ${MINGW_PACKAGE_PREFIX}-libtiff
+         ${MINGW_PACKAGE_PREFIX}-libpng
+         ${MINGW_PACKAGE_PREFIX}-libwebp
+         ${MINGW_PACKAGE_PREFIX}-openjpeg2
+         ${MINGW_PACKAGE_PREFIX}-zlib)
+source=("https://github.com/DanBloomberg/leptonica/releases/download/${pkgver}/${_realname}-${pkgver}.tar.gz")
+sha256sums=('8f18615e0743af7df7f50985c730dfcf0c93548073d1f56621e4156a8b54d3dd')
+
+prepare() {
+  cd "${srcdir}/${_realname}-${pkgver}"
+
+  # autoreconf to get updated libtool files with clang support
+  autoreconf -fiv
+}
+
+build() {
+  cd "${srcdir}/${_realname}-${pkgver}"
+  mkdir -p "${srcdir}/build-${MSYSTEM}" && cd "${srcdir}/build-${MSYSTEM}"
+
+  CFLAGS+=" -DMINIMUM_SEVERITY=L_SEVERITY_WARNING -DOPJ_STATIC"
+  ../"${_realname}-${pkgver}"/configure \
+    --prefix="${MINGW_PREFIX}" \
+    --build="${MINGW_CHOST}" \
+    --host="${MINGW_CHOST}" \
+    --disable-dependency-tracking \
+    --disable-silent-rules
+
+  make
+}
+
+check() {
+  cd "${srcdir}/build-${MSYSTEM}"
+
+  make -j1 check
+}
+
+package() {
+  cd "${srcdir}/build-${MSYSTEM}"
+
+  make install DESTDIR="${pkgdir}"
+
+  # Fix .pc file
+  sed -e "s|$(cygpath -m ${MINGW_PREFIX})|${MINGW_PREFIX}|g" -i "${pkgdir}${MINGW_PREFIX}"/lib/pkgconfig/lept.pc
+
+  # Fix missing substitution in CMake config file (autotools only)
+  sed -e "s|@leptonica_NAME@|lept|g" -i "${pkgdir}${MINGW_PREFIX}"/lib/cmake/LeptonicaConfig.cmake
+
+  install -Dm644 "${srcdir}/${_realname}-${pkgver}/leptonica-license.txt" \
+      "${pkgdir}${MINGW_PREFIX}/share/licenses/${_realname}/LICENSE"
+}
