@@ -1,0 +1,58 @@
+# Maintainer: Alexey Pavlov <alexpux@gmail.com>
+
+_realname=pcre2
+pkgbase=mingw-w64-${_realname}
+pkgname="${MINGW_PACKAGE_PREFIX}-${_realname}"
+pkgver=10.42
+pkgrel=1
+pkgdesc="A library that implements Perl 5-style regular expressions (mingw-w64)"
+arch=('any')
+mingw_arch=('mingw32' 'mingw64' 'ucrt64' 'clang64' 'clang32' 'clangarm64')
+url="https://pcre.org/"
+license=("BSD")
+makedepends=("${MINGW_PACKAGE_PREFIX}-cc"
+             "${MINGW_PACKAGE_PREFIX}-autotools"
+             "${MINGW_PACKAGE_PREFIX}-wineditline")
+depends=("${MINGW_PACKAGE_PREFIX}-gcc-libs"
+         "${MINGW_PACKAGE_PREFIX}-bzip2"
+         "${MINGW_PACKAGE_PREFIX}-zlib")
+options=('staticlibs' 'strip')
+source=(https://github.com/PhilipHazel/pcre2/releases/download/${_realname}-${pkgver}/${_realname}-${pkgver}.tar.bz2{,.sig})
+sha256sums=('8d36cd8cb6ea2a4c2bb358ff6411b0c788633a2a45dabbf1aeb4b701d1b5e840'
+            'SKIP')
+validpgpkeys=('45F68D54BBE23FB3039B46E59766E084FB0F43D8')
+
+build() {
+  [[ -d ${srcdir}/build-${MSYSTEM} ]] && rm -rf ${srcdir}/build-${MSYSTEM}
+  mkdir -p "${srcdir}/build-${MSYSTEM}" && cd "${srcdir}/build-${MSYSTEM}"
+
+  "${srcdir}"/${_realname}-${pkgver}/configure \
+    --prefix=${MINGW_PREFIX} \
+    --build=${MINGW_CHOST} \
+    --host=${MINGW_CHOST} \
+    --target=${MINGW_CHOST} \
+    --enable-pcre2-8 \
+    --enable-pcre2-16 \
+    --enable-pcre2-32 \
+    --enable-pcre2grep-libz \
+    --enable-pcre2grep-libbz2 \
+    --enable-pcre2test-libedit
+
+  make
+}
+
+check() {
+  cd "${srcdir}/build-${MSYSTEM}"
+  make check || true
+}
+
+package() {
+  cd "${srcdir}/build-${MSYSTEM}"
+  make DESTDIR="${pkgdir}" install
+
+  # License files
+  cd "${pkgdir}${MINGW_PREFIX}/share"
+  mkdir -p licenses/${_realname}
+  mv doc/${_realname}/COPYING licenses/${_realname}
+  mv doc/${_realname}/LICENCE licenses/${_realname}
+}
