@@ -1,0 +1,118 @@
+# Maintainer: Alexey Pavlov <alexpux@gmail.com>
+# Contributor: Renato Silva <br.renatosilva@gmail.com>
+
+_realname=harfbuzz
+pkgbase=mingw-w64-${_realname}
+pkgname=("${MINGW_PACKAGE_PREFIX}-${_realname}"
+         "${MINGW_PACKAGE_PREFIX}-${_realname}-docs")
+pkgver=8.2.1
+pkgrel=1
+pkgdesc="OpenType text shaping engine (mingw-w64)"
+arch=('any')
+mingw_arch=('mingw32' 'mingw64' 'ucrt64' 'clang64' 'clang32' 'clangarm64')
+url="https://github.com/harfbuzz/harfbuzz"
+license=('spdx:MIT')
+makedepends=("${MINGW_PACKAGE_PREFIX}-cc"
+             "${MINGW_PACKAGE_PREFIX}-meson"
+             "${MINGW_PACKAGE_PREFIX}-pkgconf"
+             "${MINGW_PACKAGE_PREFIX}-python"
+             "${MINGW_PACKAGE_PREFIX}-gtk-doc"
+             "${MINGW_PACKAGE_PREFIX}-cairo"
+             "${MINGW_PACKAGE_PREFIX}-ragel")
+depends=("${MINGW_PACKAGE_PREFIX}-freetype"
+         "${MINGW_PACKAGE_PREFIX}-gcc-libs"
+         "${MINGW_PACKAGE_PREFIX}-glib2")
+checkdepends=("${MINGW_PACKAGE_PREFIX}-python-fonttools"
+              "${MINGW_PACKAGE_PREFIX}-python-setuptools")
+source=("https://github.com/harfbuzz/harfbuzz/releases/download/${pkgver}/harfbuzz-${pkgver}.tar.xz")
+sha256sums=('0fec78f98c9c8faf228957a201c8846f809452c20f8445eb092a1ba6f22dbea5')
+
+build() {
+  local -a _static_flags=(
+    -DGIO_STATIC_COMPILATION
+    -DGLIB_STATIC_COMPILATION
+    -DGMODULE_STATIC_COMPILATION
+    -DGOBJECT_STATIC_COMPILATION
+    -DGRAPHITE2_STATIC
+  )
+
+  CFLAGS+=" ${_static_flags[@]}" \
+  CXXFLAGS+=" ${_static_flags[@]}" \
+  MSYS2_ARG_CONV_EXCL="--prefix=" \
+  ${MINGW_PREFIX}/bin/meson setup \
+    --prefix="${MINGW_PREFIX}" \
+    --buildtype plain \
+    --wrap-mode=nofallback \
+    --default-library=static \
+    -Dauto_features=enabled \
+    -Dintrospection=disabled \
+    -Dgobject=disabled \
+    -Dicu=disabled \
+    -Dgdi=enabled \
+    -Dgraphite=disabled \
+    -Dchafa=disabled \
+    -Ddirectwrite=enabled \
+    -Dtests=disabled \
+    -Ddocs=disabled \
+    "build-${MSYSTEM}-static" \
+    "${_realname}-${pkgver}"
+
+  ${MINGW_PREFIX}/bin/meson compile -C "build-${MSYSTEM}-static"
+
+  MSYS2_ARG_CONV_EXCL="--prefix=" \
+  ${MINGW_PREFIX}/bin/meson setup \
+    --prefix="${MINGW_PREFIX}" \
+    --buildtype plain \
+    --wrap-mode=nofallback \
+    --default-library=shared \
+    -Dauto_features=enabled \
+    -Dintrospection=disabled \
+    -Dgobject=disabled \
+    -Dicu=disabled \
+    -Dgdi=enabled \
+    -Dgraphite=disabled \
+    -Dchafa=disabled \
+    -Ddirectwrite=enabled \
+    -Dtests=disabled \
+    "build-${MSYSTEM}-shared" \
+    "${_realname}-${pkgver}"
+
+  ${MINGW_PREFIX}/bin/meson compile -C "build-${MSYSTEM}-shared"
+}
+
+check(){
+  cd "${srcdir}/build-${MSYSTEM}-shared"
+  ${MINGW_PREFIX}/bin/meson setup -Dtests=enabled ../${_realname}-${pkgver}
+  ${MINGW_PREFIX}/bin/meson compile
+  ${MINGW_PREFIX}/bin/meson test
+}
+
+package_harfbuzz() {
+  ${MINGW_PREFIX}/bin/meson install -C "build-${MSYSTEM}-static" --destdir "${pkgdir}"
+
+  ${MINGW_PREFIX}/bin/meson install -C "build-${MSYSTEM}-shared" --destdir "${pkgdir}"
+
+  mkdir -p dest${MINGW_PREFIX}/share
+  mv "${pkgdir}${MINGW_PREFIX}"/share/gtk-doc dest${MINGW_PREFIX}/share/gtk-doc
+
+  install -Dm644 "${srcdir}/${_realname}-${pkgver}/COPYING" "${pkgdir}${MINGW_PREFIX}/share/licenses/${_realname}/COPYING"
+}
+
+package_harfbuzz-docs() {
+  pkgdesc+=" (documentation)"
+  depends=()
+  optdepends=()
+
+  mv dest/* "${pkgdir}"
+}
+
+# template start; name=mingw-w64-splitpkg-wrappers; version=1.0;
+# vim: set ft=bash :
+
+# generate wrappers
+for _name in "${pkgname[@]}"; do
+  _short="package_${_name#${MINGW_PACKAGE_PREFIX}-}"
+  _func="$(declare -f "${_short}")"
+  eval "${_func/#${_short}/package_${_name}}"
+done
+# template end;
