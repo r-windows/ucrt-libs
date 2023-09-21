@@ -1,0 +1,67 @@
+# Maintainer: Alexey Pavlov <alexpux@gmail.com>
+
+_realname=fribidi
+pkgbase=mingw-w64-${_realname}
+pkgname="${MINGW_PACKAGE_PREFIX}-${_realname}"
+pkgver=1.0.13
+pkgrel=1
+pkgdesc="A Free Implementation of the Unicode Bidirectional Algorithm (mingw-w64)"
+arch=('any')
+mingw_arch=('mingw32' 'mingw64' 'ucrt64' 'clang64' 'clang32' 'clangarm64')
+license=('LGPL')
+url="https://github.com/fribidi/fribidi/"
+depends=()
+options=('strip' '!libtool' 'staticlibs')
+makedepends=("${MINGW_PACKAGE_PREFIX}-meson"
+             "${MINGW_PACKAGE_PREFIX}-ninja"
+             "${MINGW_PACKAGE_PREFIX}-pkg-config"
+             "${MINGW_PACKAGE_PREFIX}-cc")
+source=(${_realname}-${pkgver}.tar.gz::"https://github.com/fribidi/fribidi/archive/v${pkgver}.tar.gz")
+sha256sums=('f24e8e381bcf76533ae56bd776196f3a0369ec28e9c0fdb6edd163277e008314')
+
+build() {
+  mkdir -p build-${MSYSTEM}-static
+  cd build-${MSYSTEM}-static
+
+  MSYS2_ARG_CONV_EXCL="--prefix=" \
+  ${MINGW_PREFIX}/bin/meson.exe \
+      --prefix=${MINGW_PREFIX} \
+      --buildtype plain \
+      --prefix=${MINGW_PREFIX} \
+       -Ddocs=false \
+       --default-library static \
+      ../${_realname}-${pkgver}
+
+  ${MINGW_PREFIX}/bin/meson.exe compile
+
+  cd ..
+  mkdir -p build-${MSYSTEM}-shared
+  cd build-${MSYSTEM}-shared
+
+  MSYS2_ARG_CONV_EXCL="--prefix=" \
+  ${MINGW_PREFIX}/bin/meson.exe \
+      --prefix=${MINGW_PREFIX} \
+      --buildtype plain \
+      --prefix=${MINGW_PREFIX} \
+       -Ddocs=false \
+       --default-library shared \
+      ../${_realname}-${pkgver}
+
+  ${MINGW_PREFIX}/bin/meson.exe compile
+}
+
+check() {
+  cd build-${MSYSTEM}-shared
+
+  meson test
+}
+
+package() {
+  cd ${srcdir}/build-${MSYSTEM}-static
+  meson install --destdir="${pkgdir}"
+
+  cd ${srcdir}/build-${MSYSTEM}-shared
+  meson install --destdir="${pkgdir}"
+
+  install -Dm644 "${srcdir}/${_realname}-${pkgver}/COPYING" "${pkgdir}${MINGW_PREFIX}/share/licenses/${_realname}/COPYING"
+}
