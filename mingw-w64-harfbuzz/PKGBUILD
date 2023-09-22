@@ -36,6 +36,8 @@ build() {
     -DGRAPHITE2_STATIC
   )
 
+  # Jeroen: temp disabled -Ddirectwrite to ease the transition to arm64. Re-enable later.
+
   CFLAGS+=" ${_static_flags[@]}" \
   CXXFLAGS+=" ${_static_flags[@]}" \
   MSYS2_ARG_CONV_EXCL="--prefix=" \
@@ -51,7 +53,7 @@ build() {
     -Dgdi=enabled \
     -Dgraphite=disabled \
     -Dchafa=disabled \
-    -Ddirectwrite=enabled \
+    -Ddirectwrite=disabled \
     -Dtests=disabled \
     -Ddocs=disabled \
     "build-${MSYSTEM}-static" \
@@ -72,7 +74,7 @@ build() {
     -Dgdi=enabled \
     -Dgraphite=disabled \
     -Dchafa=disabled \
-    -Ddirectwrite=enabled \
+    -Ddirectwrite=disabled \
     -Dtests=disabled \
     "build-${MSYSTEM}-shared" \
     "${_realname}-${pkgver}"

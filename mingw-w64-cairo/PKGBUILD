@@ -71,6 +71,9 @@ build() {
     -DGOBJECT_STATIC_COMPILATION
   )
 
+  # Jeroen: temp disabled -Ddirectwrite to ease the transition to arm64. Re-enable later.
+
+
   local -a _meson_options
   _meson_options=(
     --prefix=${MINGW_PREFIX}
@@ -85,6 +88,7 @@ build() {
     -Dtee=enabled
     -Dxml=enabled
     -Dsymbol-lookup=disabled
+    -Ddwrite=disabled
   )
 
   # Enables CAIRO_WIN32_STATIC_BUILD, keeps DllMain far away (#17643)
