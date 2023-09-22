@@ -11,7 +11,6 @@ arch=('any')
 mingw_arch=('mingw32' 'mingw64' 'ucrt64' 'clang64' 'clang32' 'clangarm64')
 pkgdesc="XML parsing library, version 2 (mingw-w64)"
 depends=("${MINGW_PACKAGE_PREFIX}-libiconv"
-         "${MINGW_PACKAGE_PREFIX}-xz"
          "${MINGW_PACKAGE_PREFIX}-zlib")
 makedepends=("${MINGW_PACKAGE_PREFIX}-cc"
              "${MINGW_PACKAGE_PREFIX}-autotools"
@@ -74,7 +73,8 @@ build() {
     --target=${MINGW_CHOST} \
     --build="${MINGW_CHOST}" \
     --without-python \
-    --with-modules \
+    --without-modules \
+    --without-lzma \
     --enable-static \
     --disable-shared \
     --with-threads=win32 \
@@ -91,7 +91,8 @@ build() {
     --target=${MINGW_CHOST} \
     --build="${MINGW_CHOST}" \
     --with-python=${MINGW_PREFIX}/bin/python \
-    --with-modules \
+    --without-modules \
+    --without-lzma \
     --disable-static \
     --enable-shared \
     --with-threads=win32
