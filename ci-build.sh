@@ -13,6 +13,9 @@ pacman --noconfirm -Sy
 pacman --noconfirm --needed -S git patch make unzip pactoys
 pacman --noconfirm -S ${MINGW_PACKAGE_PREFIX}-{cc,libtre,pkgconf,xz}
 
+# Some upstream DLL files
+pacman --noconfirm --needed -Sdd ${MINGW_PACKAGE_PREFIX}-{gcc-libs,libwinpthread}
+
 # Avoid libssp dependency
 sed -i 's/-Wp,-D_FORTIFY_SOURCE=2//g' /etc/makepkg_mingw.conf
 sed -i 's/-fstack-protector-strong//g' /etc/makepkg_mingw.conf
