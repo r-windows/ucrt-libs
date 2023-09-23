@@ -104,7 +104,7 @@ build() {
       ${_config} \
       --enable-static \
       --enable-shared \
-      --disable-threads \
+      --enable-threads \
       --disable-openmp \
       --with-our-malloc \
       --with-g77-wrappers \
