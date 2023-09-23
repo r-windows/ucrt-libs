@@ -35,6 +35,9 @@ jobs:
       - name: Kill old processes
         run: |
           taskkill /IM gpg-agent.exe /F
+          taskkill /IM pacman.exe /F
+          taskkill /IM bash.exe /F
+          taskkill /IM sh.exe /F
           taskkill /F /FI "MODULES eq msys-2.0.dll"
           exit 0
         shell: cmd
