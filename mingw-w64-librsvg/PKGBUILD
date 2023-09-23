@@ -78,7 +78,7 @@ build() {
     --build=${MINGW_CHOST} \
     --host=${MINGW_CHOST} \
     --enable-static \
-    --disable-shared \
+    --enable-shared \
     --disable-introspection \
     --enable-tools=yes \
     --enable-pixbuf-loader=yes \
