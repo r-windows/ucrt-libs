@@ -38,7 +38,7 @@ build() {
     --target=${MINGW_CHOST} \
     --prefix=${MINGW_PREFIX} \
     --enable-static \
-    --disable-shared \
+    --enable-shared \
     --disable-openmp \
     LIBLEPT_HEADERSDIR=${MINGW_PREFIX}/include
 
