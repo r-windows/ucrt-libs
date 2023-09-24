@@ -1,0 +1,148 @@
+# Maintainer: Alexey Pavlov <alexpux@gmail.com>
+
+_realname=opencv
+pkgbase=mingw-w64-${_realname}
+pkgname="${MINGW_PACKAGE_PREFIX}-${_realname}"
+pkgver=4.8.0
+pkgrel=1
+pkgdesc="Open Source Computer Vision Library (mingw-w64)"
+arch=('any')
+url="https://opencv.org/"
+license=("BSD")
+depends=("${MINGW_PACKAGE_PREFIX}-libjpeg"
+         "${MINGW_PACKAGE_PREFIX}-libpng"
+         "${MINGW_PACKAGE_PREFIX}-libtiff"
+         "${MINGW_PACKAGE_PREFIX}-libwebp"
+         "${MINGW_PACKAGE_PREFIX}-zlib"
+         "${MINGW_PACKAGE_PREFIX}-gcc-libs")
+makedepends=("${MINGW_PACKAGE_PREFIX}-cc"
+             "${MINGW_PACKAGE_PREFIX}-cmake"
+             "${MINGW_PACKAGE_PREFIX}-ninja"
+             "${MINGW_PACKAGE_PREFIX}-python3")
+source=("${_realname}-${pkgver}.tar.gz"::https://github.com/opencv/opencv/archive/${pkgver}.tar.gz
+        "${_realname}_contrib-${pkgver}.tar.gz"::https://github.com/opencv/opencv_contrib/archive/${pkgver}.tar.gz
+        '0001-mingw-w64-cmake.patch'
+        '0004-generate-proper-pkg-config-file.patch'
+        '0008-mingw-w64-cmake-lib-path.patch'
+        '0014-python-install-path.patch'
+        '0015-windres-cant-handle-spaces-in-defines.patch'
+        '0021-requires-vtk.patch'
+        '0104-rgbd-module-missing-include.patch'
+        '0106-use-find-package-with-hdf5.patch')
+sha256sums=('cbf47ecc336d2bff36b0dcd7d6c179a9bb59e805136af6b9670ca944aef889bd'
+            'b4aef0f25a22edcd7305df830fa926ca304ea9db65de6ccd02f6cfa5f3357dbb'
+            '34e63a897024d41adeadcf593480ae4074ecaed5fc7b05ba5cc2469c7669a83e'
+            '7fac6a7788638f8843f562381413ce13c59038d2fafc5dc05258195128e5caf5'
+            '7398e66f80be37382bd427b5eb3a1201a23113c14e71435a44df8779ea1b8a34'
+            '0c310a580d6700601d4b4f824b849c0f0d64d3953e249f04c6a91f15aa8bee0a'
+            '11522ffedb22980ba8d09ff715a25327fe14806e55588bffa761e39e1d035ea5'
+            'f572f94eb3e438eb1e0700ee04b9c999cd3216b39ba04321148137cecf6bbcb5'
+            'c6c92cf39dfe45b8fb41d80ac0de3cd304e8b695420b307fd4320a105d8fe9f4'
+            '01db42dc6fec466433ebe701be4fa21d5cb439cc156b04d969290a98e18f7467')
+
+# Helper macros to help make tasks easier #
+apply_patch_with_msg() {
+  for _patch in "$@"
+  do
+    msg2 "Applying ${_patch}"
+    patch -Nbp1 -i "${srcdir}/${_patch}"
+  done
+}
+
+del_file_exists() {
+  for _fname in "$@"
+  do
+    if [ -f ${_fname} ]; then
+      rm -rf ${_fname}
+    fi
+  done
+}
+# =========================================== #
+
+prepare() {
+  cd "${srcdir}/${_realname}-${pkgver}"
+  apply_patch_with_msg \
+    0001-mingw-w64-cmake.patch \
+    0004-generate-proper-pkg-config-file.patch \
+    0008-mingw-w64-cmake-lib-path.patch \
+    0014-python-install-path.patch \
+    0015-windres-cant-handle-spaces-in-defines.patch \
+    0021-requires-vtk.patch
+
+  cd "${srcdir}/${_realname}_contrib-${pkgver}"
+  apply_patch_with_msg \
+    0104-rgbd-module-missing-include.patch \
+    0106-use-find-package-with-hdf5.patch
+}
+
+build() {
+  for _variant in static shared; do
+
+    if [[ ${_variant} == static ]]; then
+      BUILD_SHARED_LIBS="OFF"
+    else
+      BUILD_SHARED_LIBS="ON"
+    fi
+
+    mkdir -p ${srcdir}/build-${_variant} && cd ${srcdir}/build-${_variant}
+
+    CFLAGS+=" -D_POSIX_SOURCE -Wno-attributes"
+    CXXFLAGS+=" -D_POSIX_SOURCE -Wno-attributes"
+
+    export OpenEXR_HOME=${MINGW_PREFIX}
+    export OpenBLAS_HOME=${MINGW_PREFIX}
+
+    MSYS2_ARG_CONV_EXCL="-DCMAKE_INSTALL_PREFIX=;-DPYTHON2_PACKAGES_PATH=;-DPYTHON3_PACKAGES_PATH=" \
+    ${MINGW_PREFIX}/bin/cmake.exe -Wno-dev \
+      -G"Ninja" \
+      -DCMAKE_INSTALL_PREFIX=${MINGW_PREFIX} \
+      -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS} \
+      -DPKG_CONFIG_WITHOUT_PREFIX=ON \
+      -DWITH_OPENCL=ON \
+      -DWITH_OPENGL=ON \
+      -DWITH_TBB=OFF \
+      -DWITH_XINE=OFF \
+      -DBUILD_WITH_DEBUG_INFO=OFF \
+      -DBUILD_DOCS=OFF \
+      -DBUILD_TESTS=OFF \
+      -DBUILD_PERF_TESTS=OFF \
+      -DBUILD_PROTOBUF=OFF \
+      -DBUILD_EXAMPLES=OFF \
+      -DBUILD_JAVA=OFF \
+      -DINSTALL_C_EXAMPLES=OFF \
+      -DINSTALL_PYTHON_EXAMPLES=OFF \
+      -DWITH_GTK=OFF \
+      -DWITH_QT=OFF \
+      -DWITH_VTK=OFF \
+      -DWITH_GDAL=OFF \
+      -DWITH_JASPER=OFF \
+      -DWITH_MSMF=OFF \
+      -DWITH_FFMPEG=OFF \
+      -DWITH_GSTREAMER=OFF \
+      -DWITH_OPENEXR=OFF \
+      -DWITH_PROTOBUF=OFF \
+      -DWITH_XINE=OFF \
+      -DWITH_QUIRC=ON \
+      -DWITH_ADE=OFF \
+      -DWITH_OPENCL_D3D11_NV=OFF \
+      -DOPENCV_SKIP_PYTHON_LOADER=ON \
+      -DCMAKE_SKIP_RPATH=ON \
+      -DENABLE_PRECOMPILED_HEADERS=OFF \
+      -DOPENCV_EXTRA_MODULES_PATH=../${_realname}_contrib-${pkgver}/modules \
+      -DBUILD_INFO_SKIP_EXTRA_MODULES=ON \
+      -DBUILD_opencv_python2=OFF \
+      -DBUILD_opencv_python3=OFF \
+      -DOPENCV_PYTHON_SKIP_DETECTION=ON \
+      -DOPENCV_GENERATE_PKGCONFIG=ON \
+      ../${_realname}-${pkgver}
+
+    ${MINGW_PREFIX}/bin/cmake --build .
+  done
+}
+
+package() {
+  cd "${srcdir}/build-static"
+  DESTDIR=${pkgdir} ${MINGW_PREFIX}/bin/cmake --install .
+  cd "${srcdir}/build-shared"
+  DESTDIR=${pkgdir} ${MINGW_PREFIX}/bin/cmake --install .
+}
