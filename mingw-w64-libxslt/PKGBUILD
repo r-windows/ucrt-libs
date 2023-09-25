@@ -61,8 +61,8 @@ build() {
     --target=${MINGW_CHOST} \
     --disable-shared \
     --enable-static \
-    --with-crypto \
-    --with-plugins \
+    --without-crypto \
+    --without-plugins \
     --with-libxml-prefix=${MINGW_PREFIX} \
     --without-python
 
@@ -77,8 +77,8 @@ build() {
     --target=${MINGW_CHOST} \
     --enable-shared \
     --disable-static \
-    --with-crypto \
-    --with-plugins \
+    --without-crypto \
+    --without-plugins \
     --with-libxml-prefix=${MINGW_PREFIX} \
     --without-python
 
