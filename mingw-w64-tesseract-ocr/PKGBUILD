@@ -28,9 +28,8 @@ prepare() {
 }
 
 build() {
-  [[ -d "${srcdir}/build-${MSYSTEM}" ]] && rm -rf "${srcdir}/build-${MSYSTEM}"
-  cp -r "${srcdir}/tesseract-${pkgver}" "${srcdir}/build-${MSYSTEM}"
-  cd "${srcdir}/build-${MSYSTEM}"
+  cp -r "${srcdir}/tesseract-${pkgver}" "${srcdir}/static-${MSYSTEM}"
+  cd "${srcdir}/static-${MSYSTEM}"
 
   ../tesseract-${pkgver}/configure \
     --build=${MINGW_CHOST} \
@@ -38,12 +37,27 @@ build() {
     --target=${MINGW_CHOST} \
     --prefix=${MINGW_PREFIX} \
     --enable-static \
+    --disable-shared \
+    --disable-openmp \
+    LIBLEPT_HEADERSDIR=${MINGW_PREFIX}/include
+
+  make
+
+  cp -r "${srcdir}/tesseract-${pkgver}" "${srcdir}/shared-${MSYSTEM}"
+  cd "${srcdir}/shared-${MSYSTEM}"
+
+  ../tesseract-${pkgver}/configure \
+    --build=${MINGW_CHOST} \
+    --host=${MINGW_CHOST} \
+    --target=${MINGW_CHOST} \
+    --prefix=${MINGW_PREFIX} \
+    --disable-static \
     --enable-shared \
     --disable-openmp \
     LIBLEPT_HEADERSDIR=${MINGW_PREFIX}/include
 
   make
-  #make training
+
 }
 
 check() {
@@ -52,7 +66,10 @@ check() {
 }
 
 package() {
-  cd "${srcdir}/build-${MSYSTEM}"
+  cd "${srcdir}/static-${MSYSTEM}"
+  make DESTDIR="${pkgdir}" install
+
+  cd "${srcdir}/shared-${MSYSTEM}"
   make DESTDIR="${pkgdir}" install
   #make DESTDIR="${pkgdir}" training-install
 
