@@ -71,8 +71,10 @@ build() {
     mkdir -p "${srcdir}/build-${MSYSTEM}${_variant}" && cd "${srcdir}/build-${MSYSTEM}${_variant}"
     if [[ ${_variant} == -static ]]; then
       ENABLE_VARIANT="--enable-static --enable-hardcoded-tables --pkg-config-flags=--static"
+      export CFLAGS="-UX264_API_IMPORTS" #x264.pc is weird
     else
       ENABLE_VARIANT=--enable-shared
+      export CFLAGS=""
     fi
     ../${_realname}-${pkgver}/configure \
       --prefix=${MINGW_PREFIX} \
