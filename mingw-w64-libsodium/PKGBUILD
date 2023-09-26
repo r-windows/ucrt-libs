@@ -15,9 +15,23 @@ makedepends=("${MINGW_PACKAGE_PREFIX}-autotools" "${MINGW_PACKAGE_PREFIX}-cc")
 source=("https://download.libsodium.org/libsodium/releases/${_realname}-${pkgver}.tar.gz")
 sha256sums=('6f504490b342a4f8a4c4a02fc9b866cbef8622d5df4e5452b46be121e46636c1')
 
+
+prepare() {
+  cd ${srcdir}/${_realname}-${pkgver}
+  sed -i '/AX_ADD_FORTIFY_SOURCE/d' configure.ac
+  sed -i 's/_FORTIFY_SOURCE/BLABLABLA/g' configure.ac
+  autoreconf -fiv
+}
+
 build() {
   [[ -d "${srcdir}/build-${MSYSTEM}" ]] && rm -rf "${srcdir}/build-${MSYSTEM}"
   mkdir -p "${srcdir}/build-${MSYSTEM}" && cd "${srcdir}/build-${MSYSTEM}"
+
+  # Somehow llvm seems to default ssp
+  #if [[ $MINGW_PACKAGE_PREFIX == *-clang-* ]]; then
+  #  CPPFLAGS+=" -U_FORTIFY_SOURCE"
+  #  CFLAGS+=" -fno-stack-protector"
+  #fi
 
   ../${_realname}-${pkgver}/configure \
     --prefix=${MINGW_PREFIX} \
