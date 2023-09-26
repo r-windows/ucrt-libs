@@ -43,6 +43,7 @@ package() {
   cd ${srcdir}/build-${MINGW_CHOST}/build/generic
   make DESTDIR="${pkgdir}" install
 
-  # Jeroen: fix wrong name?
-  mv -v ${pkgdir}/lib/xvidcore.a ${pkgdir}/lib/libxvidcore.a || true
+  # add lib prefix with static and import library name (#18553)
+  mv "${pkgdir}${MINGW_PREFIX}"/lib/{,lib}xvidcore.dll.a
+  mv "${pkgdir}${MINGW_PREFIX}"/lib/{,lib}xvidcore.a
 }
