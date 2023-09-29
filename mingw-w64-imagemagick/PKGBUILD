@@ -35,14 +35,17 @@ depends=("${MINGW_PACKAGE_PREFIX}-bzip2"
          "${MINGW_PACKAGE_PREFIX}-zstd")
 options=('staticlibs' 'strip' '!debug' 'libtool')
 source=(https://imagemagick.org/download/releases/ImageMagick-${_basever}${_rc}.tar.xz
-        6.9.12-build-fixes.patch)
+        6.9.12-build-fixes.patch
+        https://github.com/ImageMagick/ImageMagick6/commit/abb87fce6330.diff)
 sha256sums=('570419d87cc8f22d36a038b4a91de349b181d3c23cfbedc241f89789564402b0'
+            'SKIP'
             'SKIP')
 validpgpkeys=('D8272EF51DA223E4D05B466989AB63D48277377A')
 
 prepare() {
   cd ImageMagick-${_basever}${_rc}
   patch -p1 -i ${srcdir}/6.9.12-build-fixes.patch
+  patch -p1 -i ${srcdir}/abb87fce6330.diff
   autoreconf -fiv
 }
 
