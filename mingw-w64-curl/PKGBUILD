@@ -2,7 +2,7 @@
 _realname=curl
 pkgbase=mingw-w64-${_realname}
 pkgname="${MINGW_PACKAGE_PREFIX}-${_realname}"
-pkgver=8.1.2
+pkgver=8.3.0
 pkgrel=9000
 pkgdesc="Command line tool and library for transferring data with URLs. (mingw-w64)"
 arch=('any')
@@ -24,7 +24,7 @@ source=("${url}/download/${_realname}-${pkgver}.tar.xz"
         "0002-nghttp2-static.patch"
         "0003-libpsl-static-libs.patch"
         "0004-more-static-fixes.patch")
-sha256sums=('31b1118eb8bfd43cd95d9a3f146f814ff874f6ed3999b29d94f4d1e7dbac5ef6'
+sha256sums=('376d627767d6c4f05105ab6d497b0d9aba7111770dd9d995225478209c37ea63'
             'SKIP'
             'c4e6bfd5b58f944d75293128effbd22fe42ee0131b915d9230ceb3c004c0322d'
             '3ee9c75a3046f86f91290c143170179230c9adc6eabfbb79eb26f708a165b719'
