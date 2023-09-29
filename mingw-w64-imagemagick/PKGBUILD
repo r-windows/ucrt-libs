@@ -58,7 +58,7 @@ build() {
   #--with-lcms2, --with-opencl, --without-ltdl
   #LIBS="$(pkg-config --static --libs-only-l pangocairo cairo-gobject) -lntdll -lgdi32 -lgdiplus -ldnsapi -liphlpapi -luserenv -lbcrypt -ladvapi32" \
 
-  export CFLAGS+=" -DOPJ_STATIC -DLIBXML_STATIC"
+  export CFLAGS+=" -DOPJ_STATIC -DLIBXML_STATIC -DCAIRO_WIN32_STATIC_BUILD"
   ../ImageMagick-${_basever}${_rc}/configure \
     --prefix=${MINGW_PREFIX} \
     --build=${MINGW_CHOST} \
