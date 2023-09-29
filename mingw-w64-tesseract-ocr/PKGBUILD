@@ -78,3 +78,4 @@ package() {
   # Fix .pc file
   sed -s "/^Libs:/ { s|$(cygpath -m ${MINGW_PREFIX})|${MINGW_PREFIX}|g }" -i "${pkgdir}${MINGW_PREFIX}"/lib/pkgconfig/tesseract.pc
 }
+

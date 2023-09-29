@@ -98,3 +98,4 @@ package() {
   make DESTDIR="${pkgdir}" install || true
   install -Dm644 "${srcdir}/${_realname}-${pkgver}/COPYING.LIB" "${pkgdir}${MINGW_PREFIX}/share/licenses/${_realname}/COPYING.LIB"
 }
+

@@ -100,3 +100,4 @@ package() {
   cd "${srcdir}/build-static"
   DESTDIR="${pkgdir}" ${MINGW_PREFIX}/bin/cmake.exe --build ./ --target install
 }
+
