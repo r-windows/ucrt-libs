@@ -34,6 +34,7 @@ build() {
     -DGMODULE_STATIC_COMPILATION
     -DGOBJECT_STATIC_COMPILATION
     -DGRAPHITE2_STATIC
+    -DCAIRO_WIN32_STATIC_BUILD
   )
 
   # Jeroen: temp disabled -Ddirectwrite to ease the transition to arm64. Re-enable later.
