@@ -20,14 +20,21 @@ depends=("${MINGW_PACKAGE_PREFIX}-gdk-pixbuf2"
          "${MINGW_PACKAGE_PREFIX}-libxml2")
 options=('staticlibs' 'strip')
 source=("https://download.gnome.org/sources/librsvg/${pkgver%.*}/${_realname}-${pkgver}.tar.xz"
-        "0001-configure-set-pass-prefix-to-pkg-config-when-retriev.patch")
+        "0001-configure-set-pass-prefix-to-pkg-config-when-retriev.patch"
+        "glib-0.18.1.tar.gz::https://crates.io/api/v1/crates/glib/0.18.1/download"
+        "glib-rs.patch")
 sha256sums=('335fe2e0c2cbf1b7bf0668651224a23e135451f0b1793cd813649be2bffa74e8'
-            '189eec6486c9ef6cf1071af9750405bc41e16ae3a55ad663435e574369fec915')
+            '189eec6486c9ef6cf1071af9750405bc41e16ae3a55ad663435e574369fec915'
+            'SKIP'
+            'SKIP')
 msys2_repository_url="https://gitlab.gnome.org/GNOME/librsvg"
 
 prepare() {
-  cd "${srcdir}/${_realname}-${pkgver}"
+  # Patch the glib rust bindings first
+  cd "${srcdir}/glib-0.18.1"
+  patch -p1 -i "${srcdir}/glib-rs.patch"
 
+  cd "${srcdir}/${_realname}-${pkgver}"
   patch -p1 -i "${srcdir}/0001-configure-set-pass-prefix-to-pkg-config-when-retriev.patch"
 
 
@@ -35,7 +42,7 @@ prepare() {
   ## See: https://github.com/msys2/MINGW-packages/issues/18574
   echo "" >> Cargo.toml
   echo "[patch.crates-io]" >> Cargo.toml
-  echo 'glib = { git = "https://github.com/jeroen/glib-rs.git" }' >> Cargo.toml
+  echo "glib = { path = '../glib-0.18.1' }" >> Cargo.toml
 
   cargo update --package glib
   cargo fetch --locked
