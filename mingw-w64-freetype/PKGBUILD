@@ -5,7 +5,7 @@ _realname=freetype
 pkgbase=mingw-w64-${_realname}
 pkgname="${MINGW_PACKAGE_PREFIX}-${_realname}"
 pkgver=2.13.2
-pkgrel=1
+pkgrel=9000
 pkgdesc="TrueType font rendering library (mingw-w64)"
 arch=('any')
 mingw_arch=('mingw32' 'mingw64' 'ucrt64' 'clang64' 'clang32' 'clangarm64')
@@ -14,10 +14,12 @@ license=('spdx:GPL-2.0-or-later OR FTL')
 depends=("${MINGW_PACKAGE_PREFIX}-gcc-libs"
          "${MINGW_PACKAGE_PREFIX}-bzip2"
          "${MINGW_PACKAGE_PREFIX}-libpng"
+         "${MINGW_PACKAGE_PREFIX}-harfbuzz"
          "${MINGW_PACKAGE_PREFIX}-zlib")
 makedepends=("${MINGW_PACKAGE_PREFIX}-meson"
              "${MINGW_PACKAGE_PREFIX}-ninja"
              "${MINGW_PACKAGE_PREFIX}-pkgconf"
+             "${MINGW_PACKAGE_PREFIX}-glib2"
              "${MINGW_PACKAGE_PREFIX}-cc")
 source=(https://download-mirror.savannah.gnu.org/releases/freetype//freetype-${pkgver}.tar.xz{,.sig}
         freetype-2.10.0-enable-valid.patch
@@ -48,23 +50,14 @@ prepare() {
 build() {
   mkdir -p "${srcdir}/build-${MSYSTEM}" && cd "${srcdir}/build-${MSYSTEM}"
 
-  declare -a extra_config
-  if check_option "debug" "n"; then
-    extra_config+=("--buildtype=release")
-  else
-    extra_config+=("--buildtype=debug")
-  fi
-
-  extra_config+=("-Dharfbuzz=disabled")
-  extra_config+=("-Dbrotli=disabled")
-
   MSYS2_ARG_CONV_EXCL="--prefix=" \
     meson setup \
       --prefix="${MINGW_PREFIX}" \
       --wrap-mode=nodownload \
       --auto-features=enabled \
       --default-library=both \
-      "${extra_config[@]}" \
+      -Dharfbuzz=enabled \
+      -Dbrotli=disabled \
       ../${_realname}-${pkgver}
 
   meson compile
