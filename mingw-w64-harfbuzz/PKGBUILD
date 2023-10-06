@@ -18,10 +18,10 @@ makedepends=("${MINGW_PACKAGE_PREFIX}-cc"
              "${MINGW_PACKAGE_PREFIX}-python"
              "${MINGW_PACKAGE_PREFIX}-gtk-doc"
              "${MINGW_PACKAGE_PREFIX}-cairo"
-             "${MINGW_PACKAGE_PREFIX}-glib2"
              "${MINGW_PACKAGE_PREFIX}-ragel")
 depends=("${MINGW_PACKAGE_PREFIX}-freetype"
-         "${MINGW_PACKAGE_PREFIX}-gcc-libs")
+         "${MINGW_PACKAGE_PREFIX}-gcc-libs"
+         "${MINGW_PACKAGE_PREFIX}-glib2")
 checkdepends=("${MINGW_PACKAGE_PREFIX}-python-fonttools"
               "${MINGW_PACKAGE_PREFIX}-python-setuptools")
 source=("https://github.com/harfbuzz/harfbuzz/releases/download/${pkgver}/harfbuzz-${pkgver}.tar.xz")
