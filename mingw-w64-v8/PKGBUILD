@@ -17,8 +17,7 @@ makedepends=("${MINGW_PACKAGE_PREFIX}-cc"
              "${MINGW_PACKAGE_PREFIX}-pkgconf"
              "${MINGW_PACKAGE_PREFIX}-python"
              "git")
-depends=("${MINGW_PACKAGE_PREFIX}-icu"
-         "${MINGW_PACKAGE_PREFIX}-zlib")
+depends=("${MINGW_PACKAGE_PREFIX}-zlib")
 source=("https://github.com/v8/v8/archive/refs/tags/${pkgver}.tar.gz"
         "https://github.com/v8/v8/commit/2ef3d07f93f15.patch"
         "bare-clones/build::git+https://chromium.googlesource.com/chromium/src/build.git#commit=e14e0cc3b60c6ba8901741da3f9c18b7fa983880"
@@ -156,6 +155,9 @@ prepare() {
 
   sed -e "s|#include <windows.globalization.h>||g" \
       -i third_party/abseil-cpp/absl/time/internal/cctz/src/time_zone_lookup.cc
+
+  # Avoid libssp dependency
+  sed -i '/fortify/Id' ${srcdir}/${_realname}-${pkgver}/build/config/compiler/BUILD.gn
 }
 
 build() {
