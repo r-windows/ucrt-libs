@@ -1,0 +1,207 @@
+# Maintainer: Rodrigo Hernandez <kwizatz@aeongames.com>
+# Contributor: Raed Rizqie <raed.rizqie@gmail.com>
+
+_realname=v8
+pkgbase=mingw-w64-${_realname}
+pkgname="${MINGW_PACKAGE_PREFIX}-${_realname}"
+pkgver=11.8.172.13
+pkgrel=1
+pkgdesc="Fast and modern Javascript engine (mingw-w64)"
+arch=('any')
+mingw_arch=('mingw32' 'mingw64' 'ucrt64' 'clang64' 'clang32')
+url="https://v8.dev"
+license=('spdx:BSD-3-Clause')
+makedepends=("${MINGW_PACKAGE_PREFIX}-cc"
+             "${MINGW_PACKAGE_PREFIX}-gn"
+             "${MINGW_PACKAGE_PREFIX}-ninja"
+             "${MINGW_PACKAGE_PREFIX}-pkgconf"
+             "${MINGW_PACKAGE_PREFIX}-python"
+             "git")
+depends=("${MINGW_PACKAGE_PREFIX}-icu"
+         "${MINGW_PACKAGE_PREFIX}-zlib")
+source=("https://github.com/v8/v8/archive/refs/tags/${pkgver}.tar.gz"
+        "https://github.com/v8/v8/commit/2ef3d07f93f15.patch"
+        "bare-clones/build::git+https://chromium.googlesource.com/chromium/src/build.git#commit=e14e0cc3b60c6ba8901741da3f9c18b7fa983880"
+        "bare-clones/abseil-cpp::git+https://chromium.googlesource.com/chromium/src/third_party/abseil-cpp.git#commit=7affa303ea4ebf4d4de65b3f20f230c7bb16a2ed"
+        "bare-clones/zlib::git+https://chromium.googlesource.com/chromium/src/third_party/zlib.git#commit=f5fd0ad2663e239a31184ad4c9919991dda16f46"
+        "bare-clones/common::git+https://chromium.googlesource.com/chromium/src/base/trace_event/common.git#commit=147f65333c38ddd1ebf554e89965c243c8ce50b3"
+        "bare-clones/googletest::git+https://chromium.googlesource.com/external/github.com/google/googletest.git#commit=af29db7ec28d6df1c7f0f745186884091e602e07"
+        "bare-clones/jinja2::git+https://chromium.googlesource.com/chromium/src/third_party/jinja2.git#commit=515dd10de9bf63040045902a4a310d2ba25213a0"
+        "bare-clones/markupsafe::git+https://chromium.googlesource.com/chromium/src/third_party/markupsafe.git#commit=006709ba3ed87660a17bd4548c45663628f5ed85"
+        "bare-clones/clang::git+https://chromium.googlesource.com/chromium/src/tools/clang.git#commit=9fc887ccded86c9355f1abbe80c651271c59632f"
+        "001-add-mingw-toolchain.patch"
+        "002-buildflags-fixes.patch"
+        "003-fix-macros-and-functions.patch"
+        "004-fix-static-assert-implementations.patch"
+        "005-fix-conflicting-macros.patch"
+        "006-support-clang-in-mingw-mode.patch"
+        "007-snapshot-use-system-zlib-header.patch"
+        "008-prioritized-native-thread-on-windows.patch"
+        "009-unicode-for-wide-char-functions.patch"
+        "010-disable-msvc-hack.patch"
+        "011-make-sure-that-__rdtsc-is-declared.patch"
+        "012-remove-dllimport-attributes.patch"
+        "013-builtin-deps-fixes.patch"
+        "014-fix-missing-include.patch"
+        "015-abseil-build-as-static-lib.patch"
+        "016-zlib-use-sytem-lib.patch"
+        "icu.gn"
+        "zlib.gn"
+        "v8_libbase.pc"
+        "v8_libplatform.pc"
+        "v8.pc")
+sha256sums=('b4fab2d45e962e82706c64e4112257a0aae65414d6432a7ae01bc50130242b43'
+            '35d726247b5eec81269901b3c2fcf91dbc564c448654265d833598e439e9f2a6'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'SKIP'
+            'cc5ba47426936ff9027acd2f9493c4dd52c83f2e0b3c46e56cf7582915c3572b'
+            '28092f71029393b52aa4315a9d38b59faee221220d5f380a16438e7a2d650337'
+            '06b5ac9c0389291aff7d0c8fe096af50713385f3be9df0326535208e49e1a0f4'
+            'bd1976ddb9ca8387c125ee578c9b66d85e27f989544e53e4ca0598bbd7ce52e9'
+            '75a0d6fbf04cb9bbb724230104cf28595cd9b1169a0e91a4090bd0d3b6f80a8c'
+            '2b738a7bccf26cc650bb85c68eb2bea7b66b27006f15c85b7583372a15e2654d'
+            '1fca982ec6ede3b29d2692231569944ce0ad33519b47fd6fb01b0975c10eb6bd'
+            '3855f5d7b81c2df37f31de09ae9638d7247b78c5798ac18a58ab6e6be3befe5c'
+            'e46320e6b09c9d7d822ee6ff37b4ceb828de98b57f2b8eb988ab3e5e6ad493bb'
+            'e4d8e57914cfcf6c0ea299d0556d7b747271e5a7ec66e1d8d52394fcd0da34b6'
+            'c7d119eb59aa34898efda6fdaf5b2eabeb3390d527531ad54f210fc1e733c75a'
+            '399bdc454bf119c1b4034147382e58a5bbe51ee9b0380a326c639844c85e123a'
+            '37a29668fb02d4fa60062c02f0d24dce4ab9b7fce4d7f5a8e6eca745fa125be2'
+            '0b142b795a4db7d063825d9578503f275632eb0139b5ab4a7fc75e45201ab04a'
+            '53f5a7a29608f305d4f7cab708aabe63e3cc686ff337f40bae16004e8edf7f00'
+            'a4275f41723cc990f2f43559ce716100830a8ce3f38e4878f6bf36d70d47b646'
+            'e1bc88af48143f29f5805b8ac5d77addef1b09318d1f5f127a9281872c00303b'
+            '7e1e39a3dc69632f7bf9182c92405186ce709aca921cf0abefadb6fa8b825510'
+            'fbddbe4849b623afb320472aab316c9a08b54182161b6b4911cb7ef7d65e2b0e'
+            'ca81528892f0e02fe7ecd159568610221fb8d0df109d9d0dbdfa00c1284dd0fc'
+            '579e199a798ff76b72a5b17380a3cd09d361cb7cee99403090c3a266d1b2e527')
+
+prepare() {
+  echo ":: Patching build directory"
+  cd ${srcdir}/build
+  patch -p1 -i ${srcdir}/001-add-mingw-toolchain.patch
+  python ${srcdir}/build/util/lastchange.py -o ${srcdir}/build/util/LASTCHANGE
+  rm -rf ${srcdir}/${_realname}-${pkgver}/build
+  ln -sf ${srcdir}/build ${srcdir}/${_realname}-${pkgver}
+  echo "checkout_google_benchmark = false" > ${srcdir}/${_realname}-${pkgver}/build/config/gclient_args.gni
+
+  echo ":: Patching abseil-cpp directory"
+  cd ${srcdir}/abseil-cpp
+  patch -p1 -i ${srcdir}/015-abseil-build-as-static-lib.patch
+  ln -sf ${srcdir}/abseil-cpp ${srcdir}/${_realname}-${pkgver}/third_party
+
+  echo ":: Patching zlib directory"
+  cd ${srcdir}/zlib
+  patch -p1 -i ${srcdir}/016-zlib-use-sytem-lib.patch
+  mkdir -p ${srcdir}/${_realname}-${pkgver}/third_party/zlib
+  ln -sf ${srcdir}/zlib.gn ${srcdir}/${_realname}-${pkgver}/third_party/zlib/BUILD.gn
+  rm -rf ${srcdir}/${_realname}-${pkgver}/third_party/zlib/google
+  ln -sf ${srcdir}/zlib/google ${srcdir}/${_realname}-${pkgver}/third_party/zlib
+
+  echo ":: Patching icu directory"
+  mkdir -p ${srcdir}/${_realname}-${pkgver}/third_party/icu
+  ln -sf ${srcdir}/icu.gn ${srcdir}/${_realname}-${pkgver}/third_party/icu/BUILD.gn
+
+  echo ":: Soft linking extra repos"
+  mkdir -p ${srcdir}/${_realname}-${pkgver}/base/trace_event
+  ln -sf ${srcdir}/common ${srcdir}/${_realname}-${pkgver}/base/trace_event
+  mkdir -p ${srcdir}/${_realname}-${pkgver}/third_party/googletest/src
+  ln -sf ${srcdir}/googletest/* ${srcdir}/${_realname}-${pkgver}/third_party/googletest/src
+  ln -sf ${srcdir}/jinja2 ${srcdir}/${_realname}-${pkgver}/third_party
+  ln -sf ${srcdir}/markupsafe ${srcdir}/${_realname}-${pkgver}/third_party
+  ln -sf ${srcdir}/clang ${srcdir}/${_realname}-${pkgver}/tools
+
+  echo ":: Patching v8 source"
+  cd ${srcdir}/${_realname}-${pkgver}
+  patch -p1 -i ${srcdir}/2ef3d07f93f15.patch
+  patch -p1 -i ${srcdir}/002-buildflags-fixes.patch
+  patch -p1 -i ${srcdir}/003-fix-macros-and-functions.patch
+  patch -p1 -i ${srcdir}/004-fix-static-assert-implementations.patch
+  patch -p1 -i ${srcdir}/005-fix-conflicting-macros.patch
+  patch -p1 -i ${srcdir}/006-support-clang-in-mingw-mode.patch
+  patch -p1 -i ${srcdir}/007-snapshot-use-system-zlib-header.patch
+  patch -p1 -i ${srcdir}/008-prioritized-native-thread-on-windows.patch
+  patch -p1 -i ${srcdir}/009-unicode-for-wide-char-functions.patch
+  patch -p1 -i ${srcdir}/010-disable-msvc-hack.patch
+  patch -p1 -i ${srcdir}/011-make-sure-that-__rdtsc-is-declared.patch
+  patch -p1 -i ${srcdir}/012-remove-dllimport-attributes.patch
+  patch -p1 -i ${srcdir}/013-builtin-deps-fixes.patch
+  patch -p1 -i ${srcdir}/014-fix-missing-include.patch
+
+  sed -e "s|@VERSION@|${pkgver}|g" \
+      -e "s|@CFLAGS@|${_cflags}|g" \
+      -e "s|^prefix=.*|prefix=${MINGW_PREFIX}|g" -i "${srcdir}/v8_libbase.pc"
+
+  sed -e "s|@VERSION@|${pkgver}|g" \
+      -e "s|@CFLAGS@|${_cflags}|g" \
+      -e "s|^prefix=.*|prefix=${MINGW_PREFIX}|g" -i "${srcdir}/v8_libplatform.pc"
+
+  sed -e "s|@VERSION@|${pkgver}|g" \
+      -e "s|@CFLAGS@|${_cflags}|g" \
+      -e "s|^prefix=.*|prefix=${MINGW_PREFIX}|g" -i "${srcdir}/v8.pc"
+
+  #jeroen: fix constants and flags for older mingw versions
+  sed -e "s|MEM_REPLACE_PLACEHOLDER|0x00004000|g" \
+      -e "s|MEM_RESERVE_PLACEHOLDER|0x00040000|g" \
+      -e "s|MEM_PRESERVE_PLACEHOLDER|0x00000002|g" \
+      -e "s|CREATE_WAITABLE_TIMER_HIGH_RESOLUTION|0x00000002|g" \
+      -e "s|MEM_COALESCE_PLACEHOLDERS|0x00000001|g" \
+      -i src/base/platform/platform-win32.cc
+
+  sed -e "s|#include <windows.globalization.h>||g" \
+      -i third_party/abseil-cpp/absl/time/internal/cctz/src/time_zone_lookup.cc
+}
+
+build() {
+  cd ${_realname}-${pkgver}
+
+  local _buildtype=Release
+  local _arch=x64
+  local _clang=false
+  if [[ ${CARCH} == aarch64 ]]; then
+    _arch=arm64
+  fi
+  if [[ ${MSYSTEM} == CLANG* ]]; then
+    _clang=true
+  fi
+
+  # generate build files
+  ${MINGW_PREFIX}/bin/gn gen out/${_buildtype}-${MSYSTEM} --args="
+    target_cpu=\"${_arch}\"
+    is_debug=false
+    is_clang=${_clang}
+    v8_monolithic=true
+    v8_static_library=true
+    is_component_build=false
+    use_custom_libcxx=false
+    use_lld=false
+    use_sysroot=false
+    v8_enable_verify_heap=false
+    v8_enable_i18n_support=false
+    v8_enable_sandbox=false
+    v8_use_external_startup_data=false
+    win_enable_cfg_guards=false
+    enable_iterator_debugging=false
+    treat_warnings_as_errors=false"
+
+  ${MINGW_PREFIX}/bin/ninja -C out/${_buildtype}-${MSYSTEM} v8_monolith v8_libbase v8_libplatform v8 d8
+}
+
+package() {
+  cd ${_realname}-${pkgver}
+  local _buildtype=Release
+  install -d ${pkgdir}${MINGW_PREFIX}/{bin,include/{cppgc/internal,libplatform},lib/pkgconfig,share/licenses/${_realname}}
+  install -Dm755 out/${_buildtype}-${MSYSTEM}/d8.exe                      ${pkgdir}${MINGW_PREFIX}/bin/d8.exe
+  install -Dm755 out/${_buildtype}-${MSYSTEM}/obj/libv8_monolith.a        ${pkgdir}${MINGW_PREFIX}/lib/
+  install -Dm644 include/*.h                                              ${pkgdir}${MINGW_PREFIX}/include/
+  install -Dm644 include/cppgc/*.h                                        ${pkgdir}${MINGW_PREFIX}/include/cppgc/
+  install -Dm644 include/cppgc/internal/*.h                               ${pkgdir}${MINGW_PREFIX}/include/cppgc/internal/
+  install -Dm644 include/libplatform/*.h                                  ${pkgdir}${MINGW_PREFIX}/include/libplatform/
+  install -Dm644 LICENSE*                                                 ${pkgdir}${MINGW_PREFIX}/share/licenses/${_realname}/
+}
