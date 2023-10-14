@@ -4,6 +4,14 @@ source 'ci-library.sh'
 mkdir artifacts
 mkdir sourcepkg
 
+# https://github.com/msys2/msys2-autobuild/issues/62
+# https://github.com/lazka/msys2-autobuild/commit/42c04bf2231afafc000d06fe6360258d83c30ed7
+if [ "$MINGW_ARCH" == "clangarm64" ]; then
+  mkdir -p /etc/pacman.d/hooks
+  touch /etc/pacman.d/hooks/texinfo-install.hook
+  touch /etc/pacman.d/hooks/texinfo-remove.hook
+fi
+
 # Enable custom -next repos (this will break msys2 toolchains that use dll's)
 cp -f pacman.conf /etc/pacman.conf
 pacman --noconfirm -Scc
