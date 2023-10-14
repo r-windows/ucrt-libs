@@ -4,7 +4,7 @@ _realname=imagemagick
 pkgbase="mingw-w64-${_realname}"
 pkgname="${MINGW_PACKAGE_PREFIX}-${_realname}"
 _basever=6.9.12
-_rc=-96
+_rc=-98
 pkgver=${_basever}${_rc//-/.} # pkgver doesn't have "," "/", "-" and space.
 pkgrel=1
 pkgdesc="An image viewing/manipulation program (mingw-w64)"
@@ -35,17 +35,14 @@ depends=("${MINGW_PACKAGE_PREFIX}-bzip2"
          "${MINGW_PACKAGE_PREFIX}-zstd")
 options=('staticlibs' 'strip' '!debug' 'libtool')
 source=(https://imagemagick.org/download/releases/ImageMagick-${_basever}${_rc}.tar.xz
-        6.9.12-build-fixes.patch
-        https://github.com/ImageMagick/ImageMagick6/commit/abb87fce6330.diff)
-sha256sums=('570419d87cc8f22d36a038b4a91de349b181d3c23cfbedc241f89789564402b0'
-            'SKIP'
+        6.9.12-build-fixes.patch)
+sha256sums=('05e3f1994bcd2dd35aad33739832deb5ac5a3db46b4bcf39c8cdc281d72ed7d7'
             'SKIP')
 validpgpkeys=('D8272EF51DA223E4D05B466989AB63D48277377A')
 
 prepare() {
   cd ImageMagick-${_basever}${_rc}
   patch -p1 -i ${srcdir}/6.9.12-build-fixes.patch
-  patch -p1 -i ${srcdir}/abb87fce6330.diff
   autoreconf -fiv
 }
 

@@ -22,9 +22,9 @@ diff -aurp ImageMagick-6.9.12-93-orig/magick/distribute-cache.c ImageMagick-6.9.
  #include <sys/socket.h>
  #include <arpa/inet.h>
 +#endif
- #define CHAR_TYPE_CAST (char *)
  #define CLOSE_SOCKET(socket) (void) close(socket)
  #define HANDLER_RETURN_TYPE void *
+ #define HANDLER_RETURN_VALUE (void *) NULL
 diff -aurp ImageMagick-6.9.12-93-orig/magick/nt-base.h ImageMagick-6.9.12-93/magick/nt-base.h
 --- ImageMagick-6.9.12-93-orig/magick/nt-base.h	2023-07-30 15:22:23
 +++ ImageMagick-6.9.12-93/magick/nt-base.h	2023-08-05 17:14:05
