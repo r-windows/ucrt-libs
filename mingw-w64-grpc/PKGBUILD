@@ -45,7 +45,7 @@ build() {
   # cases like 'gpr_log(GPR_DEBUG, "Failed to free %" PRIuPTR ...'
   CPPFLAGS="${CPPFLAGS//-D__USE_MINGW_ANSI_STDIO=1/}"
   # add STRSAFE_NO_DEPRECATE define, otherwise strsafe breaks libc++ headers
-  CXXFLAGS+=" -DSTRSAFE_NO_DEPRECATE"
+  CXXFLAGS+=" -DSTRSAFE_NO_DEPRECATE -DCARES_STATICLIB"
   case "${MINGW_PACKAGE_PREFIX}" in
     *-clang-x86_64*)
     ;;
@@ -54,6 +54,9 @@ build() {
       LDFLAGS+=" -Wl,--disable-dynamicbase,--default-image-base-low"
     ;;
   esac
+
+  # Force standalone grpc_cpp_plugin.exe
+  rm -v ${MINGW_PREFIX}/lib/lib{protoc,protobuf,winpthread,pthread}.dll.a
 
   MSYS2_ARG_CONV_EXCL="-DCMAKE_INSTALL_PREFIX=" \
     ${MINGW_PREFIX}/bin/cmake.exe \
