@@ -1,0 +1,90 @@
+# Maintainer: Mario Emmenlauer <memmenlauer@biodataanalysis.de>
+# Contributor: Biswapriyo Nath <nathbappai@gmail.com>
+
+_realname=grpc
+pkgbase=mingw-w64-${_realname}
+pkgname=("${MINGW_PACKAGE_PREFIX}-${_realname}")
+pkgver=1.51.1
+pkgrel=1
+pkgdesc="Google's high performance, open source, general RPC framework (mingw-w64)"
+arch=('any')
+mingw_arch=('mingw32' 'mingw64' 'ucrt64' 'clang64' 'clang32' 'clangarm64')
+url='https://www.grpc.io/'
+license=('spdx:Apache-2.0')
+depends=("${MINGW_PACKAGE_PREFIX}-abseil-cpp"
+         "${MINGW_PACKAGE_PREFIX}-c-ares"
+         "${MINGW_PACKAGE_PREFIX}-openssl"
+         "${MINGW_PACKAGE_PREFIX}-protobuf"
+         "${MINGW_PACKAGE_PREFIX}-zlib"
+         "${MINGW_PACKAGE_PREFIX}-re2")
+makedepends=("${MINGW_PACKAGE_PREFIX}-cmake"
+             "${MINGW_PACKAGE_PREFIX}-ninja"
+             "${MINGW_PACKAGE_PREFIX}-cc")
+source=("${_realname}-${pkgver}.tar.gz::https://github.com/grpc/grpc/archive/v${pkgver}.tar.gz")
+sha256sums=('b55696fb249669744de3e71acc54a9382bea0dce7cd5ba379b356b12b82d4229')
+noextract=(${_realname}-${pkgver}.tar.gz)
+
+prepare() {
+  tar -xzf "${srcdir}"/${_realname}-${pkgver}.tar.gz -C "${srcdir}" || true
+
+  cd "${srcdir}"/${_realname}-${pkgver}
+}
+
+build() {
+  [[ -d "${srcdir}/build-${MSYSTEM}" ]] && rm -rf "${srcdir}/build-${MSYSTEM}"
+  mkdir -p "${srcdir}"/build-${MSYSTEM} && cd "${srcdir}"/build-${MSYSTEM}
+
+  declare -a extra_config
+  if check_option "debug" "n"; then
+    extra_config+=("-DCMAKE_BUILD_TYPE=Release")
+  else
+    extra_config+=("-DCMAKE_BUILD_TYPE=Debug")
+  fi
+
+  # remove __USE_MINGW_ANSI_STDIO=1 define, it breaks grpc string handling for
+  # cases like 'gpr_log(GPR_DEBUG, "Failed to free %" PRIuPTR ...'
+  CPPFLAGS="${CPPFLAGS//-D__USE_MINGW_ANSI_STDIO=1/}"
+  # add STRSAFE_NO_DEPRECATE define, otherwise strsafe breaks libc++ headers
+  CXXFLAGS+=" -DSTRSAFE_NO_DEPRECATE"
+  case "${MINGW_PACKAGE_PREFIX}" in
+    *-clang-x86_64*)
+    ;;
+    *-x86_64*)
+      # https://github.com/msys2/MINGW-packages/issues/8984
+      LDFLAGS+=" -Wl,--disable-dynamicbase,--default-image-base-low"
+    ;;
+  esac
+
+  MSYS2_ARG_CONV_EXCL="-DCMAKE_INSTALL_PREFIX=" \
+    ${MINGW_PREFIX}/bin/cmake.exe \
+      -Wno-dev \
+      -GNinja \
+      -DCMAKE_INSTALL_PREFIX="${MINGW_PREFIX}" \
+      "${extra_config[@]}" \
+      -DBUILD_SHARED_LIBS=OFF \
+      -DCMAKE_CXX_STANDARD=17 \
+      -DCMAKE_SKIP_RPATH=ON \
+      -DgRPC_ZLIB_PROVIDER="package" \
+      -DgRPC_CARES_PROVIDER="package" \
+      -DgRPC_RE2_PROVIDER="package" \
+      -DgRPC_SSL_PROVIDER="package" \
+      -DgRPC_PROTOBUF_PROVIDER="package" \
+      -DgRPC_ABSL_PROVIDER="package" \
+      ../${_realname}-${pkgver}
+
+  ${MINGW_PREFIX}/bin/cmake.exe --build .
+}
+
+check() {
+  cd "${srcdir}/build-${MSYSTEM}"
+
+  #${MINGW_PREFIX}/bin/cmake.exe --build . --target test
+}
+
+package() {
+  cd "${srcdir}/build-${MSYSTEM}"
+
+  DESTDIR="${pkgdir}" ${MINGW_PREFIX}/bin/cmake.exe --install .
+
+  install -Dm644 "${srcdir}/${_realname}-${pkgver}/LICENSE" "${pkgdir}${MINGW_PREFIX}/share/licenses/${_realname}/LICENSE"
+}

@@ -1,0 +1,99 @@
+# Maintainer: Alexey Pavlov <alexpux@gmail.com>
+# Contributor: Andrew Sun <adsun701@gmail.com>
+
+_realname=c-ares
+pkgbase=mingw-w64-${_realname}
+pkgname="${MINGW_PACKAGE_PREFIX}-${_realname}"
+pkgver=1.18.1
+pkgrel=1
+pkgdesc="C library that performs DNS requests and name resolves asynchronously (mingw-w64)"
+arch=('any')
+mingw_arch=('mingw32' 'mingw64' 'ucrt64' 'clang64' 'clang32' 'clangarm64')
+url="https://c-ares.org/"
+license=("MIT, BSD")
+makedepends=("${MINGW_PACKAGE_PREFIX}-cmake"
+             "${MINGW_PACKAGE_PREFIX}-ninja"
+             "${MINGW_PACKAGE_PREFIX}-cc"
+             "${MINGW_PACKAGE_PREFIX}-pkg-config")
+options=('strip' 'staticlibs')
+source=(#"https://c-ares.org/download/${_realname}-${pkgver}.tar.gz"{,.asc}
+        "https://github.com/${_realname}/${_realname}/releases/download/${_realname//-}-${pkgver//./_}/${_realname}-${pkgver}.tar.gz"{,.asc}
+        0002-Add-static-pkg-config.patch
+        0003-fix-cmake-targets.patch)
+validpgpkeys=('914C533DF9B2ADA2204F586D78E11C6B279D5C91'
+              '27EDEAF22F3ABCEB50DB9A125CC908FDB71E12C2')
+sha256sums=('1a7d52a8a84a9fbffb1be9133c0f6e17217d91ea5a6fa61f6b4729cda78ebbcf'
+            'SKIP'
+            '787ce206f7956ecde7a5b61ae49701d6396d9869e05e5db335801f38b2af2ad9'
+            'ce5810b35ea0f1cfbd5b5c8b5eea96f736d89750d0a68b9da413f4dea16119d8')
+
+# Helper macros to help make tasks easier #
+apply_patch_with_msg() {
+  for _patch in "$@"
+  do
+    msg2 "Applying $_patch"
+    patch -Nbp1 -i "${srcdir}/$_patch"
+  done
+}
+
+del_file_exists() {
+  for _fname in "$@"
+  do
+    if [ -f $_fname ]; then
+      rm -rf $_fname
+    fi
+  done
+}
+# =========================================== #
+
+prepare() {
+  cd "${_realname}-${pkgver}"
+  del_file_exists libcares-static.pc.cmake
+  apply_patch_with_msg \
+    0002-Add-static-pkg-config.patch \
+    0003-fix-cmake-targets.patch
+}
+
+build() {
+  msg2 "Build shared version ..."
+  [[ -d "${srcdir}"/build-shared-${CARCH} ]] && rm -rf "${srcdir}"/build-shared-${CARCH}
+  mkdir -p "${srcdir}"/build-shared-${CARCH} && cd "${srcdir}"/build-shared-${CARCH}
+
+  MSYS2_ARG_CONV_EXCL="-DCMAKE_INSTALL_PREFIX=" \
+  ${MINGW_PREFIX}/bin/cmake.exe \
+      -Wno-dev \
+      -G"Ninja" \
+      -DCMAKE_INSTALL_PREFIX="${MINGW_PREFIX}" \
+      -DCMAKE_BUILD_TYPE="Release" \
+      -DCARES_STATIC=OFF \
+      -DCARES_SHARED=ON \
+      ../${_realname}-${pkgver}
+
+  ${MINGW_PREFIX}/bin/cmake.exe --build ./
+
+    msg2 "Build static version ..."
+  [[ -d "${srcdir}"/build-static-${CARCH} ]] && rm -rf "${srcdir}"/build-static-${CARCH}
+  mkdir -p "${srcdir}"/build-static-${CARCH} && cd "${srcdir}"/build-static-${CARCH}
+
+  MSYS2_ARG_CONV_EXCL="-DCMAKE_INSTALL_PREFIX=" \
+  ${MINGW_PREFIX}/bin/cmake.exe \
+      -Wno-dev \
+      -G"Ninja" \
+      -DCMAKE_INSTALL_PREFIX="${MINGW_PREFIX}" \
+      -DCMAKE_BUILD_TYPE="Release" \
+      -DCARES_STATIC=ON \
+      -DCARES_SHARED=OFF \
+      ../${_realname}-${pkgver}
+
+  ${MINGW_PREFIX}/bin/cmake.exe --build ./
+}
+
+package() {
+  cd "${srcdir}"/build-static-${CARCH}
+  DESTDIR="${pkgdir}" ${MINGW_PREFIX}/bin/cmake.exe --build ./ --target install
+
+  cd "${srcdir}"/build-shared-${CARCH}
+  DESTDIR="${pkgdir}" ${MINGW_PREFIX}/bin/cmake.exe --build ./ --target install
+
+install -Dm644 "${srcdir}/${_realname}-${pkgver}/LICENSE.md" "${pkgdir}${MINGW_PREFIX}/share/licenses/${_realname}/LICENSE.md"
+}
