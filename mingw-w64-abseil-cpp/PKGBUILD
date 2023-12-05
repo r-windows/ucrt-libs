@@ -53,7 +53,7 @@ build() {
       -GNinja \
       -DCMAKE_INSTALL_PREFIX=${MINGW_PREFIX} \
       "${extra_config[@]}" \
-      -DBUILD_SHARED_LIBS="$( [[ ${MINGW_PACKAGE_PREFIX} == *-clang-* ]] && echo OFF || echo ON )" \
+      -DBUILD_SHARED_LIBS=OFF \
       -DCMAKE_CXX_STANDARD=17 \
       -DABSL_PROPAGATE_CXX_STD=ON \
       ../${_realname}-${pkgver}
