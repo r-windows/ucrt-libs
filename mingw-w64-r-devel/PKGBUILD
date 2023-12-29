@@ -1,0 +1,88 @@
+# Maintainer: Gore Liu <goreliu@126.com>
+
+_realname=r-devel
+pkgbase=mingw-w64-${_realname}
+pkgname=("${MINGW_PACKAGE_PREFIX}-${_realname}")
+pkgver=4.3.9000
+pkgrel=1
+pkgdesc="Software environment for statistical computing (mingw-w64)"
+arch=('any')
+mingw_arch=('mingw32' 'mingw64' 'ucrt64' 'clang64' 'clang32' 'clangarm64')
+url='https://www.r-project.org/'
+license=('GPL-2.0-or-later')
+makedepends=("${MINGW_PACKAGE_PREFIX}-cc"
+             "${MINGW_PACKAGE_PREFIX}-fc"
+             "texinfo"
+             "texinfo-tex"
+             "rsync"
+             "unzip"
+             "diffutils")
+depends=("${MINGW_PACKAGE_PREFIX}-gcc-libs"
+         "${MINGW_PACKAGE_PREFIX}-bzip2"
+         "${MINGW_PACKAGE_PREFIX}-cairo"
+         "${MINGW_PACKAGE_PREFIX}-curl"
+         "${MINGW_PACKAGE_PREFIX}-icu"
+         "${MINGW_PACKAGE_PREFIX}-libjpeg-turbo"
+         "${MINGW_PACKAGE_PREFIX}-libpng"
+         "${MINGW_PACKAGE_PREFIX}-libtiff"
+         "${MINGW_PACKAGE_PREFIX}-omp"
+         "${MINGW_PACKAGE_PREFIX}-pcre2"
+         "${MINGW_PACKAGE_PREFIX}-xz"
+         "${MINGW_PACKAGE_PREFIX}-zlib")
+#source=("https://cran.r-project.org/src/base-prerelease/R-devel.tar.gz")
+source=("R-devel.tar.gz::https://cran.r-project.org/src/base-prerelease/R-devel_2023-12-27_r85742.tar.gz"
+        "https://github.com/r-windows/bundles/releases/download/rtools43-5863/tcltk-5863-5787.zip"
+        "https://github.com/r-windows/bundles/releases/download/rtools43-5863/Tcl-aarch64-5863-5787.zip")
+sha256sums=('SKIP'
+            'SKIP'
+            'SKIP')
+noextract=(R-devel.tar.gz
+           tcltk-5863-5787.zip
+           Tcl-aarch64-5863-5787.zip)
+
+prepare() {
+  rm -rf ${srcdir}/${_realname}-${pkgver}
+  mkdir ${srcdir}/${_realname}-${pkgver}
+  MSYS="winsymlinks:lnk" tar -xf "R-devel.tar.gz" -C ${srcdir}/${_realname}-${pkgver} --strip-components=1
+
+  export PATH="$PATH:$(cygpath $LOCALAPPDATA)/Programs/MiKTeX/miktex/bin/x64:/c/progra~1/MiKTeX/miktex/bin/x64"
+  echo "PATH: $PATH"
+  miktex --admin packages install inconsolata || true
+  pdflatex --version
+  texindex --version
+  texi2any --version
+  make --version
+  perl --version
+}
+
+build() {
+  rm -Rf build-${MSYSTEM}
+  MSYS="winsymlinks:lnk" cp -Rf ${srcdir}/${_realname}-${pkgver} build-${MSYSTEM}
+  cd build-${MSYSTEM}
+  echo "WIN =" > src/gnuwin32/MkRules.local
+  echo "ICU_LIBS = $(pkg-config --libs --static icu-i18n)" >> src/gnuwin32/MkRules.local
+  echo "CURL_LIBS = $(pkg-config --libs --static libcurl)" >> src/gnuwin32/MkRules.local
+  echo "CAIRO_LIBS = \"$(pkg-config --libs --static cairo)\"" >> src/gnuwin32/MkRules.local
+  echo "CAIRO_CPPFLAGS = \"$(pkg-config --cflags --static cairo)\"" >> src/gnuwin32/MkRules.local
+
+  if [[ ${MSYSTEM} == CLANG* ]]; then
+    echo "USE_LLVM = 1" >> src/gnuwin32/MkRules.local
+  fi
+  if [[ ${CARCH} == aarch64 ]]; then
+    unzip ${srcdir}/Tcl-aarch64-5863-5787.zip -d .
+  else
+    unzip ${srcdir}/tcltk-5863-5787.zip -d .
+  fi
+  cd src/gnuwin32
+  make distribution
+}
+
+check() {
+  cd "${srcdir}"/build-${MSYSTEM}
+  #make check
+}
+
+package() {
+  cd "${srcdir}"/build-${MSYSTEM}
+  #make install DESTDIR="${pkgdir}"
+}
