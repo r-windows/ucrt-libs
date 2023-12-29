@@ -66,3 +66,4 @@ package() {
   # Remove NuGet package
   rm -rf "${pkgdir}"${MINGW_PREFIX}/build
 }
+
