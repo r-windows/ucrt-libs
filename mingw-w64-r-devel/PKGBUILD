@@ -48,8 +48,6 @@ prepare() {
 
   export PATH="$PATH:$(cygpath $LOCALAPPDATA)/Programs/MiKTeX/miktex/bin/x64:/c/progra~1/MiKTeX/miktex/bin/x64"
   echo "PATH: $PATH"
-  miktex --admin packages install inconsolata || true
-  pdflatex --version
   texindex --version
   texi2any --version
   make --version
@@ -75,12 +73,14 @@ build() {
     echo "USE_LLVM = 1" >> MkRules.local
   fi
   cat MkRules.local
-  make distribution
+  make all
+  make cairodevices
+  make recommended
 }
 
 check() {
   cd "${srcdir}"/build-${MSYSTEM}
-  #make check
+  make check
 }
 
 package() {
