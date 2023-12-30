@@ -12,6 +12,7 @@ url='https://www.r-project.org/'
 license=('GPL-2.0-or-later')
 makedepends=("${MINGW_PACKAGE_PREFIX}-cc"
              "${MINGW_PACKAGE_PREFIX}-fc"
+             "${MINGW_PACKAGE_PREFIX}-pkgconf"
              "texinfo"
              "texinfo-tex"
              "rsync"
@@ -59,21 +60,21 @@ build() {
   rm -Rf build-${MSYSTEM}
   MSYS="winsymlinks:lnk" cp -Rf ${srcdir}/${_realname}-${pkgver} build-${MSYSTEM}
   cd build-${MSYSTEM}
-  echo "WIN =" > src/gnuwin32/MkRules.local
-  echo "ICU_LIBS = $(pkg-config --libs --static icu-i18n)" >> src/gnuwin32/MkRules.local
-  echo "CURL_LIBS = $(pkg-config --libs --static libcurl)" >> src/gnuwin32/MkRules.local
-  echo "CAIRO_LIBS = \"$(pkg-config --libs --static cairo)\"" >> src/gnuwin32/MkRules.local
-  echo "CAIRO_CPPFLAGS = \"$(pkg-config --cflags --static cairo)\"" >> src/gnuwin32/MkRules.local
-
-  if [[ ${MSYSTEM} == CLANG* ]]; then
-    echo "USE_LLVM = 1" >> src/gnuwin32/MkRules.local
-  fi
   if [[ ${CARCH} == aarch64 ]]; then
     unzip ${srcdir}/Tcl-aarch64-5863-5787.zip -d .
   else
     unzip ${srcdir}/tcltk-5863-5787.zip -d .
   fi
   cd src/gnuwin32
+  echo "WIN =" > MkRules.local
+  echo "ICU_LIBS = $(pkg-config --libs --static icu-i18n)" >> MkRules.local
+  echo "CURL_LIBS = $(pkg-config --libs --static libcurl)" >> MkRules.local
+  echo "CAIRO_LIBS = \"$(pkg-config --libs --static cairo)\"" >> MkRules.local
+  echo "CAIRO_CPPFLAGS = \"$(pkg-config --cflags --static cairo)\"" >> MkRules.local
+  if [[ ${MSYSTEM} == CLANG* ]]; then
+    echo "USE_LLVM = 1" >> MkRules.local
+  fi
+  cat MkRules.local
   make distribution
 }
 
