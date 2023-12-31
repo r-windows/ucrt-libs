@@ -67,6 +67,7 @@ build() {
 }
 
 check() {
+  export MY_TCLTK="${MINGW_PREFIX}/lib"
   cd ${srcdir}/build-${MSYSTEM}/src/gnuwin32
   make check || tail -n100 ${srcdir}/build-${MSYSTEM}/tests/*.fail
 }
