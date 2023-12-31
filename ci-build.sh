@@ -66,7 +66,7 @@ for package in "${packages[@]}"; do
     #execute "Installing build dependencies for $package" makepkg-mingw -seoc --noconfirm
     #rm -fv /${MINGW_ARCH}/lib/*.dll.a
 
-    execute 'Building binary' makepkg-mingw --noconfirm --noprogressbar --nocheck --skippgpcheck --syncdeps --rmdeps --cleanbuild
+    execute 'Building binary' makepkg-mingw --noconfirm --noprogressbar --skippgpcheck --syncdeps --rmdeps --cleanbuild
     #MINGW_ARCH=mingw64 execute 'Building source' makepkg-mingw --noconfirm --noprogressbar --skippgpcheck --allsource
     execute 'List output contents' ls -ltr
     execute 'Installing' yes:pacman --noprogressbar --upgrade --noconfirm *.pkg.tar.xz

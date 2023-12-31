@@ -14,10 +14,7 @@ makedepends=("${MINGW_PACKAGE_PREFIX}-cc"
              "${MINGW_PACKAGE_PREFIX}-fc"
              "${MINGW_PACKAGE_PREFIX}-pkgconf"
              "texinfo"
-             "texinfo-tex"
-             "rsync"
-             "unzip"
-             "diffutils")
+             "texinfo-tex")
 depends=("${MINGW_PACKAGE_PREFIX}-gcc-libs"
          "${MINGW_PACKAGE_PREFIX}-bzip2"
          "${MINGW_PACKAGE_PREFIX}-cairo"
@@ -31,6 +28,8 @@ depends=("${MINGW_PACKAGE_PREFIX}-gcc-libs"
          "${MINGW_PACKAGE_PREFIX}-tk"
          "${MINGW_PACKAGE_PREFIX}-xz"
          "${MINGW_PACKAGE_PREFIX}-zlib")
+checkdepends=("diffutils"
+              "unzip")
 source=("https://cran.r-project.org/src/base-prerelease/R-devel.tar.gz")
 #source=("R-devel.tar.gz::https://cran.r-project.org/src/base-prerelease/R-devel_2023-12-27_r85742.tar.gz")
 sha256sums=('SKIP')
@@ -68,7 +67,7 @@ build() {
 }
 
 check() {
-  cd "${srcdir}"/build-${MSYSTEM}
+  cd "${srcdir}"/build-${MSYSTEM}/src/gnuwin32
   make check
 }
 
