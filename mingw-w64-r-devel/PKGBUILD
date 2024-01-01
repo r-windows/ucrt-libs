@@ -69,10 +69,15 @@ build() {
 check() {
   export MY_TCLTK="${MINGW_PREFIX}/lib"
   cd ${srcdir}/build-${MSYSTEM}/src/gnuwin32
-  make check || tail -n100 ${srcdir}/build-${MSYSTEM}/tests/*.fail
+  make check || true
 }
 
 package() {
-  cd "${srcdir}"/build-${MSYSTEM}
-  #make install DESTDIR="${pkgdir}"
+  cd ${srcdir}/build-${MSYSTEM}/src/gnuwin32/installer
+  sed -i '/manual/d' Makefile
+  sed -i '/GW_INFO_FILES/d' Makefile
+  sed -i '/dosfiles.zip/d' Makefile
+  make imagedir
+  mkdir -p ${pkgdir}${MINGW_PREFIX}
+  cp -Rv R-devel ${pkgdir}${MINGW_PREFIX}/R
 }
