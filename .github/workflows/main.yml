@@ -46,6 +46,7 @@ jobs:
         with:
           msystem: ${{ matrix.msystem }}
           install: git patch make unzip pactoys
+          cache: false
 
       - name: Cleanup old stuff
         run: rm -Rf */pkg */src
