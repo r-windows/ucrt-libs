@@ -55,6 +55,7 @@ build() {
     -DQL_BUILD_TEST_SUITE=OFF \
     -DQL_INSTALL_TEST_SUITE=OFF \
     -DQL_ENABLE_OPENMP=OFF \
+    -DQL_HIGH_RESOLUTION_DATE=ON \
     ../${_srcname}-${pkgver}
 
   "${MINGW_PREFIX}"/bin/cmake.exe --build .
