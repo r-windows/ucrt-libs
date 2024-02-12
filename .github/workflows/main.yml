@@ -42,7 +42,7 @@ jobs:
           exit 0
         shell: cmd
 
-      - uses: msys2/setup-msys2@v2
+      - uses: msys2/setup-msys2@v2.21.1
         with:
           msystem: ${{ matrix.msystem }}
           install: git patch make unzip pactoys
