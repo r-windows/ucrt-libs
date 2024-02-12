@@ -13,13 +13,14 @@ if [ "$MINGW_ARCH" == "clangarm64" ]; then
 fi
 
 # Enable custom -next repos (this will break msys2 toolchains that use dll's)
+pacman --noconfirm -S ${MINGW_PACKAGE_PREFIX}-{cc,libtre,pkgconf,xz}
 cp -f pacman.conf /etc/pacman.conf
 pacman --noconfirm -Scc
 pacman --noconfirm -Sy
 
 # Downgrades to be compatible with rtools
 pacman --noconfirm --needed -S git patch make unzip pactoys
-pacman --noconfirm -S ${MINGW_PACKAGE_PREFIX}-{cc,libtre,pkgconf,xz}
+#pacman --noconfirm -S --needed ${MINGW_PACKAGE_PREFIX}-{cc,libtre,pkgconf,xz}
 
 # Some upstream DLL files
 pacman --noconfirm --needed -Sdd ${MINGW_PACKAGE_PREFIX}-{gcc-libs,libwinpthread}
@@ -66,7 +67,7 @@ for package in "${packages[@]}"; do
     #execute "Installing build dependencies for $package" makepkg-mingw -seoc --noconfirm
     #rm -fv /${MINGW_ARCH}/lib/*.dll.a
 
-    execute 'Building binary' makepkg-mingw --noconfirm --noprogressbar --nocheck --skippgpcheck --syncdeps --rmdeps --cleanbuild
+    execute 'Building binary' makepkg-mingw --noconfirm --noprogressbar --nocheck --skippgpcheck --syncdeps --cleanbuild
     #MINGW_ARCH=mingw64 execute 'Building source' makepkg-mingw --noconfirm --noprogressbar --skippgpcheck --allsource
     execute 'List output contents' ls -ltr
     execute 'Installing' yes:pacman --noprogressbar --upgrade --noconfirm *.pkg.tar.xz
