@@ -63,6 +63,7 @@ build() {
       -Denable-portaudio=ON \
       -Denable-dbus=OFF \
       -Denable-openmp=OFF \
+      -Denable-readline=OFF \
       ../${_realname}-${pkgver}
 
   ${MINGW_PREFIX}/bin/cmake.exe --build ./
@@ -78,6 +79,7 @@ build() {
       -Denable-portaudio=ON \
       -Denable-dbus=OFF \
       -Denable-openmp=OFF \
+      -Denable-readline=OFF \
       ../${_realname}-${pkgver}
 
   ${MINGW_PREFIX}/bin/cmake.exe --build ./
