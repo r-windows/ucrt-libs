@@ -1,0 +1,57 @@
+# Maintainer: Alexey Pavlov <alexpux@gmail.com>
+
+_realname=opus
+pkgbase=mingw-w64-${_realname}
+pkgname=("${MINGW_PACKAGE_PREFIX}-${_realname}")
+pkgver=1.4
+pkgrel=2
+pkgdesc="Codec designed for interactive speech and audio transmission over the Internet (mingw-w64)"
+arch=('any')
+mingw_arch=('mingw32' 'mingw64' 'ucrt64' 'clang64' 'clang32' 'clangarm64')
+url="https://www.opus-codec.org/"
+license=('spdx:BSD-3-Clause')
+depends=()
+makedepends=("${MINGW_PACKAGE_PREFIX}-cc"
+             "${MINGW_PACKAGE_PREFIX}-meson"
+             "${MINGW_PACKAGE_PREFIX}-ninja")
+source=("https://github.com/xiph/opus/releases/download/v${pkgver}/opus-${pkgver}.tar.gz"
+        0001-meson-fix-unknown-variable-aarch64.patch)
+sha256sums=('c9b32b4253be5ae63d1ff16eea06b94b5f0f2951b7a02aceef58e3a3ce49c51f'
+            '39bcf3085978f1c113f6e2c60f39ccff638d2f5e1e0192ca603883e35632997c')
+
+prepare() {
+  cd "${srcdir}/${_realname}-${pkgver}"
+
+  # https://github.com/xiph/opus/pull/267
+  patch -p1 -i "${srcdir}/0001-meson-fix-unknown-variable-aarch64.patch"
+}
+
+build() {
+  mkdir -p build-${MSYSTEM} && cd build-${MSYSTEM}
+
+  MSYS2_ARG_CONV_EXCL="--prefix=" \
+    ${MINGW_PREFIX}/bin/meson.exe setup \
+      --prefix="${MINGW_PREFIX}" \
+      --wrap-mode=nodownload \
+      --auto-features=enabled \
+      --buildtype=plain \
+      --default-library=both \
+      -Dasm=disabled \
+      -Dcustom-modes=true \
+      -Ddocs=disabled \
+      ../${_realname}-${pkgver}
+
+  ${MINGW_PREFIX}/bin/meson.exe compile
+}
+
+check() {
+  cd "${srcdir}/build-${MSYSTEM}"
+
+  ${MINGW_PREFIX}/bin/meson.exe test
+}
+
+package() {
+  ${MINGW_PREFIX}/bin/meson.exe install -C "${srcdir}/build-${MSYSTEM}" --destdir "${pkgdir}"
+  install -Dm644 "${srcdir}/${_realname}-${pkgver}/opus.m4" "${pkgdir}${MINGW_PREFIX}/share/aclocal/opus.m4"
+  install -Dm644 "${srcdir}/${_realname}-${pkgver}"/COPYING "${pkgdir}${MINGW_PREFIX}/share/licenses/${_realname}/COPYING"
+}
