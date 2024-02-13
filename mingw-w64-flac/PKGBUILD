@@ -38,6 +38,8 @@ build() {
     -DBUILD_DOCS=OFF \
     -DBUILD_SHARED_LIBS=OFF \
     -DBUILD_TESTING=OFF \
+    -DWITH_STACK_PROTECTOR=OFF \
+    -DWITH_FORTIFY_SOURCE=OFF \
     ../${_realname}-${pkgver}
 
   ${MINGW_PREFIX}/bin/cmake.exe --build ./
@@ -54,6 +56,8 @@ build() {
     -DBUILD_DOCS=OFF \
     -DBUILD_SHARED_LIBS=ON \
     -DBUILD_TESTING=OFF \
+    -DWITH_STACK_PROTECTOR=OFF \
+    -DWITH_FORTIFY_SOURCE=OFF \
     ../${_realname}-${pkgver}
 
   ${MINGW_PREFIX}/bin/cmake.exe --build ./
