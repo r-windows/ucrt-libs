@@ -20,8 +20,7 @@ makedepends=("${MINGW_PACKAGE_PREFIX}-cc"
              "${MINGW_PACKAGE_PREFIX}-ninja"
              "${MINGW_PACKAGE_PREFIX}-pkgconf")
 depends=("${MINGW_PACKAGE_PREFIX}-gcc-libs"
-         "${MINGW_PACKAGE_PREFIX}-libiconv"
-         "${MINGW_PACKAGE_PREFIX}-vulkan")
+         "${MINGW_PACKAGE_PREFIX}-libiconv")
 source=("https://libsdl.org/release/SDL2-${pkgver}.tar.gz"{,.sig}
         005-sdl-config-win-paths.patch)
 sha256sums=('36e2e41557e0fa4a1519315c0f5958a87ccb27e25c51776beb6f1239526447b0'
@@ -45,7 +44,7 @@ build() {
     -GNinja \
     -DCMAKE_INSTALL_PREFIX=${MINGW_PREFIX} \
     -DCMAKE_BUILD_TYPE=Release \
-    -DSDL_VULKAN=ON \
+    -DSDL_VULKAN=OFF \
     -DSDL_TEST=ON \
     ../${_realname}-${pkgver}
 
