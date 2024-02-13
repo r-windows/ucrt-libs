@@ -14,12 +14,12 @@ depends=("${MINGW_PACKAGE_PREFIX}-gcc-libs"
          "${MINGW_PACKAGE_PREFIX}-glib2"
          "${MINGW_PACKAGE_PREFIX}-libsndfile"
          "${MINGW_PACKAGE_PREFIX}-portaudio"
-         "${MINGW_PACKAGE_PREFIX}-readline"
          "${MINGW_PACKAGE_PREFIX}-SDL2")
 makedepends=("${MINGW_PACKAGE_PREFIX}-cc"
              "${MINGW_PACKAGE_PREFIX}-cmake"
              "${MINGW_PACKAGE_PREFIX}-ladspa-sdk"
              "${MINGW_PACKAGE_PREFIX}-ninja"
+             "${MINGW_PACKAGE_PREFIX}-readline"
              "${MINGW_PACKAGE_PREFIX}-pkgconf")
 source=("${_realname}-${pkgver}.tar.gz::https://github.com/FluidSynth/${_realname}/archive/v${pkgver}.tar.gz"
         "010-no-undefined.patch")
@@ -62,6 +62,7 @@ build() {
       -DBUILD_SHARED_LIBS=OFF \
       -Denable-portaudio=ON \
       -Denable-dbus=OFF \
+      -Denable-openmp=OFF \
       ../${_realname}-${pkgver}
 
   ${MINGW_PREFIX}/bin/cmake.exe --build ./
@@ -76,6 +77,7 @@ build() {
       -DBUILD_SHARED_LIBS=ON \
       -Denable-portaudio=ON \
       -Denable-dbus=OFF \
+      -Denable-openmp=OFF \
       ../${_realname}-${pkgver}
 
   ${MINGW_PREFIX}/bin/cmake.exe --build ./
