@@ -3,8 +3,8 @@
 _realname=openssl
 pkgbase=mingw-w64-${_realname}
 pkgname=("${MINGW_PACKAGE_PREFIX}-${_realname}")
-pkgver=3.1.2
-pkgrel=9000
+pkgver=3.3.0
+pkgrel=2
 pkgdesc="The Open Source toolkit for Secure Sockets Layer and Transport Layer Security (mingw-w64)"
 arch=('any')
 mingw_arch=('mingw32' 'mingw64' 'ucrt64' 'clang64' 'clang32' 'clangarm64')
@@ -19,12 +19,12 @@ source=("https://www.openssl.org/source/openssl-${pkgver}.tar.gz"{,.asc}
         '002-relocation.patch'
         'pathtools.c'
         'pathtools.h')
-sha256sums=('a0ce69b8b97ea6a35b96875235aa453b966ba3cba8af2de23657d8b6767d6539'
+sha256sums=('53e66b043322a606abf0087e7699a0e033a37fa13feb9742df35c3a33b18fb02'
             'SKIP'
             '21b96771b401442570e885c2d5689a359a91e86dcbf5511db3667202b6c1fa8a'
-            '5628dd39ab0d3ce4afbb5207bab5d22766abc86a8875b48b6d4d3efd68550e68'
-            '08209cbf1633fa92eae7e5d28f95f8df9d6184cc20fa878c99aec4709bb257fd'
-            '965d3921ec4fdeec94a2718bc2c85ce5e1a00ea0e499330a554074a7ae15dfc6')
+            '8a2d91826bd1a8fd6d3a981d2a71cfb3170060f64a053eafd8e3b32f6a30ac3b'
+            'ebf471173f5ee9c4416c10a78760cea8afaf1a4a6e653977321e8547ce7bf3c0'
+            '1585ef1b61cf53a2ca27049c11d49e0834683dfda798f03547761375df482a90')
 
 # https://www.openssl.org/community/otc.html
 validpgpkeys=(
