@@ -50,8 +50,7 @@ build() {
     "${_extra_config[@]}" \
     -DWITH_GSSAPI=OFF \
     -DUNIT_TESTING=OFF \
-    -DBUILD_STATIC_LIB=ON \
-    -DBUILD_SHARED_LIBS=ON \
+    -DBUILD_SHARED_LIBS=OFF \
     ../${_realname}-${pkgver}
 
   ${MINGW_PREFIX}/bin/cmake.exe --build ./
