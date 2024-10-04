@@ -3,7 +3,7 @@
 _realname=gifski
 pkgbase=mingw-w64-${_realname}
 pkgname=("${MINGW_PACKAGE_PREFIX}-${_realname}")
-pkgver=1.12.2
+pkgver=1.32.0
 pkgrel=1
 pkgdesc="Highest-quality GIF encoder based on pngquant (mingw-w64)"
 arch=('any')
@@ -13,8 +13,8 @@ license=("spdx:LGPL-2.1-or-later")
 makedepends=("${MINGW_PACKAGE_PREFIX}-rust"
              "${MINGW_PACKAGE_PREFIX}-cc")
 options=('staticlibs' 'strip')
-source=("https://github.com/ImageOptim/gifski/archive/refs/tags/1.12.2.tar.gz")
-sha256sums=('daaeefd21d8328282d2c1082faddbc1f4870c60c1453e6e85e1a421aa77738d6')
+source=("https://github.com/ImageOptim/gifski/archive/refs/tags/1.32.0.tar.gz")
+sha256sums=('9a9145c31936f6e6e3b30e7feb8a741bcc02e8bcec6fd480d03c25ffa55f372c')
 
 build() {
   cd ${srcdir}/${_realname}-${pkgver}
