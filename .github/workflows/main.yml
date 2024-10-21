@@ -11,7 +11,7 @@ on:
         description: Package name (without the mingw-w64- prefix) to remove
         required: true
 
-run-name: ${{ github.event.head_commit.message || format('{0} [removal] ', inputs.remove_package) }}
+run-name: ${{ github.event.pull_request.title || github.event.head_commit.message || format('{0} [removal] ', inputs.remove_package) }} (${{github.event_name}})
 
 jobs:
   build:
@@ -33,16 +33,20 @@ jobs:
     steps:
 
       - name: Kill old processes
+        timeout-minutes: 2
         run: |
+          for /l %%x in (1, 1, 5) do (
           taskkill /IM gpg-agent.exe /F
           taskkill /IM pacman.exe /F
           taskkill /IM bash.exe /F
           taskkill /IM sh.exe /F
           taskkill /F /FI "MODULES eq msys-2.0.dll"
+          )
           exit 0
         shell: cmd
 
       - uses: msys2/setup-msys2@v2
+        timeout-minutes: 10
         with:
           msystem: ${{ matrix.msystem }}
           install: git patch make unzip pactoys
