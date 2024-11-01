@@ -2,8 +2,8 @@
 _realname=curl
 pkgbase=mingw-w64-${_realname}
 pkgname="${MINGW_PACKAGE_PREFIX}-${_realname}"
-pkgver=8.8.0
-pkgrel=9000
+pkgver=8.10.1
+pkgrel=1
 pkgdesc="Command line tool and library for transferring data with URLs. (mingw-w64)"
 arch=('any')
 mingw_arch=('mingw32' 'mingw64' 'ucrt64' 'clang64' 'clang32' 'clangarm64')
@@ -12,7 +12,8 @@ license=("MIT")
 makedepends=("${MINGW_PACKAGE_PREFIX}-gcc"
              "${MINGW_PACKAGE_PREFIX}-pkg-config"
              "${MINGW_PACKAGE_PREFIX}-autotools")
-depends=("${MINGW_PACKAGE_PREFIX}-libssh2"
+depends=("${MINGW_PACKAGE_PREFIX}-ca-certificates"
+         "${MINGW_PACKAGE_PREFIX}-libssh2"
          "${MINGW_PACKAGE_PREFIX}-zlib"
          "${MINGW_PACKAGE_PREFIX}-nghttp2"
          "${MINGW_PACKAGE_PREFIX}-openssl")
@@ -23,11 +24,11 @@ source=("${url}/download/${_realname}-${pkgver}.tar.xz"
         "0001-Make-cURL-relocatable.patch"
         "0002-nghttp2-static.patch"
         "0004-more-static-fixes.patch")
-sha256sums=('0f58bb95fc330c8a46eeb3df5701b0d90c9d9bfcc42bd1cd08791d12551d4400'
+sha256sums=('73a4b0e99596a09fa5924a4fb7e4b995a85fda0d18a2c02ab9cf134bebce04ee'
             'SKIP'
             'c4e6bfd5b58f944d75293128effbd22fe42ee0131b915d9230ceb3c004c0322d'
-            '3ee9c75a3046f86f91290c143170179230c9adc6eabfbb79eb26f708a165b719'
-            '590eb65e90e756eaad993d52a101f29091ada2c742c5a607684e88fc5c560d54')
+            'SKIP'
+            'SKIP')
 validpgpkeys=('914C533DF9B2ADA2204F586D78E11C6B279D5C91'  # Daniel Stenberg
               '27EDEAF22F3ABCEB50DB9A125CC908FDB71E12C2'
               '4461EAF0F8E9097F48AF0555F9FEAFF9D34A1BDB')
@@ -74,11 +75,14 @@ build() {
     --with-ldap-lib=wldap32 \
     --with-nghttp2 \
     --without-librtmp \
-    --with-ssl \
+    --without-libpsl \
+    --with-openssl \
     --with-schannel \
-    --with-default-ssl-backend=schannel \
+    --with-default-ssl-backend=openssl \
     --without-gnutls \
-    --without-ca-bundle
+    --without-ca-bundle \
+    --without-ca-path \
+    --with-ca-fallback
 
   make
 
@@ -106,11 +110,14 @@ build() {
     --with-ldap-lib=wldap32 \
     --with-nghttp2 \
     --without-librtmp \
-    --with-ssl \
+    --without-libpsl \
+    --with-openssl \
     --with-schannel \
-    --with-default-ssl-backend=schannel \
+    --with-default-ssl-backend=openssl \
     --without-gnutls \
-    --without-ca-bundle
+    --without-ca-bundle \
+    --without-ca-path \
+    --with-ca-fallback
 
   make
 }
