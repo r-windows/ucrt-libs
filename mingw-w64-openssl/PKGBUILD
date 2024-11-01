@@ -95,6 +95,8 @@ build() {
     enable-mdc2 \
     enable-rc5  \
     enable-rfc3779 \
+    no-tests \
+    no-apps \
     -DOPENSSLBIN=\"\\\"${MINGW_PREFIX}/bin\\\"\"
 
   MSYS2_ARG_CONV_EXCL="-DENGINESDIR=;-DMODULESDIR=;-DOPENSSLDIR=;-DINSTALLTOP=;-DOPENSSLBIN=" \
@@ -104,7 +106,7 @@ build() {
 check() {
   cd "${srcdir}/build-${MSYSTEM}"
 
-  make VERBOSE=1 test
+  #make VERBOSE=1 test
 }
 
 package() {

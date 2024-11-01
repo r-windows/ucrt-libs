@@ -36,6 +36,7 @@ jobs:
         timeout-minutes: 2
         run: |
           for /l %%x in (1, 1, 5) do (
+          taskkill /IM gpg.exe /F
           taskkill /IM gpg-agent.exe /F
           taskkill /IM pacman.exe /F
           taskkill /IM bash.exe /F
@@ -46,7 +47,7 @@ jobs:
         shell: cmd
 
       - uses: msys2/setup-msys2@v2
-        timeout-minutes: 10
+        timeout-minutes: 3
         with:
           msystem: ${{ matrix.msystem }}
           install: git patch make unzip pactoys
