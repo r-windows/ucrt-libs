@@ -4,7 +4,7 @@
  Description: Library for SSH-based communication
  Version: @LIBSSH2VER@
  Requires.private: @LIBSREQUIRED@
--Libs: -L${libdir} -lssh2 @LIBSSH2_PC_LIBS@
+-Libs: -L${libdir} -lssh2 @LIBS@
 +Libs: -L${libdir} -lssh2
  Libs.private: @LIBS@
  Cflags: -I${includedir}
