@@ -12,8 +12,7 @@ license=("MIT")
 makedepends=("${MINGW_PACKAGE_PREFIX}-gcc"
              "${MINGW_PACKAGE_PREFIX}-pkg-config"
              "${MINGW_PACKAGE_PREFIX}-autotools")
-depends=("${MINGW_PACKAGE_PREFIX}-ca-certificates"
-         "${MINGW_PACKAGE_PREFIX}-libssh2"
+depends=("${MINGW_PACKAGE_PREFIX}-libssh2"
          "${MINGW_PACKAGE_PREFIX}-zlib"
          "${MINGW_PACKAGE_PREFIX}-nghttp2"
          "${MINGW_PACKAGE_PREFIX}-openssl")
@@ -78,7 +77,7 @@ build() {
     --without-libpsl \
     --with-openssl \
     --with-schannel \
-    --with-default-ssl-backend=openssl \
+    --with-default-ssl-backend=schannel \
     --without-gnutls \
     --without-ca-bundle \
     --without-ca-path \
@@ -113,7 +112,7 @@ build() {
     --without-libpsl \
     --with-openssl \
     --with-schannel \
-    --with-default-ssl-backend=openssl \
+    --with-default-ssl-backend=schannel \
     --without-gnutls \
     --without-ca-bundle \
     --without-ca-path \
