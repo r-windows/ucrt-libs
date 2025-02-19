@@ -46,20 +46,23 @@ jobs:
           exit 0
         shell: cmd
 
+      # Requires git-for-windows (msys2 git is not enough)
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          filter: blob:none
+          persist-credentials: false
+
       - uses: msys2/setup-msys2@v2
         timeout-minutes: 3
         with:
           msystem: ${{ matrix.msystem }}
-          install: git patch make unzip pactoys
-          cache: false
+          install: git patch make unzip pactoys base-devel
+          update: true
 
       - name: Cleanup old stuff
         run: rm -Rf */pkg */src
         shell: msys2 {0}
-
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
       - name: CI-Build
         run: ./ci-build.sh
