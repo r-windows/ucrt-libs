@@ -3,7 +3,7 @@
 _realname=libpq
 pkgbase=mingw-w64-${_realname}
 pkgname="${MINGW_PACKAGE_PREFIX}-${_realname}"
-pkgver=15.3
+pkgver=15.11
 pkgrel=1
 pkgdesc="Libraries for use with PostgreSQL (mingw-w64)"
 arch=('any')
@@ -25,7 +25,7 @@ source=("https://ftp.postgresql.org/pub/source/v${pkgver}/postgresql-${pkgver}.t
         postgresql-14.0-use-mingw-setjmp-on-ucrt.patch
         postgresql-15.1-clang-16.patch
         only-static2.patch)
-sha256sums=('ffc7d4891f00ffbf5c3f4eab7fbbced8460b8c0ee63c5a5167133b9e6599d932'
+sha256sums=('5367e97e81e493301cc4aab049dfbc9b4913822985bc62379faab2a281cfbdf0'
             '607217b422349770d25af20f88e4a7925e68bb934232dff368c2ee59f24249a4'
             '99e6c8b9d58a9615c7bb1e7471b8e9c074add7bffc7d2cf742bafa38e9654e1f'
             'ced0ccf978eefc1ad0641803c9759b652e588eb552ec9179cd9dfc9d94ecf499'
@@ -53,8 +53,7 @@ prepare() {
     postgresql-9.4.1-pl-tcl.patch \
     postgresql-13.1-disable-wsa-invalid-event-static-assert.patch \
     postgresql-13.1-pgevent-def.patch \
-    postgresql-14.0-use-mingw-setjmp-on-ucrt.patch \
-    postgresql-15.1-clang-16.patch
+    postgresql-14.0-use-mingw-setjmp-on-ucrt.patch
 
     # Jeroens patch
     patch -p1 --fuzz=10 -i ${srcdir}/only-static2.patch
