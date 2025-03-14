@@ -55,7 +55,7 @@ jobs:
         timeout-minutes: 3
         with:
           msystem: ${{ matrix.msystem }}
-          install: git patch make unzip pactoys base-devel
+          install: gzip zstd git patch make unzip pactoys base-devel
           update: true
 
       - name: Cleanup old stuff
