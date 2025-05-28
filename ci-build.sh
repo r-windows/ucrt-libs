@@ -25,8 +25,8 @@ pacman --noconfirm -S ${MINGW_PACKAGE_PREFIX}-{cc,libtre,pkgconf,xz}
 pacman --noconfirm --needed -Sdd ${MINGW_PACKAGE_PREFIX}-{gcc-libs,libwinpthread}
 
 # Avoid libssp dependency
-sed -i 's/-Wp,-D_FORTIFY_SOURCE=2//g' /etc/makepkg_mingw.conf
-sed -i 's/-fstack-protector-strong//g' /etc/makepkg_mingw.conf
+sed -i 's/-Wp,-D_FORTIFY_SOURCE=2//g' /etc/makepkg_mingw.d/*.conf
+sed -i 's/-fstack-protector-strong//g' /etc/makepkg_mingw.d/*.conf
 
 # Initiate git
 #git_config user.email 'ci@msys2.org'

@@ -2,7 +2,7 @@
 _realname=curl
 pkgbase=mingw-w64-${_realname}
 pkgname="${MINGW_PACKAGE_PREFIX}-${_realname}"
-pkgver=8.10.1
+pkgver=8.14.0
 pkgrel=1
 pkgdesc="Command line tool and library for transferring data with URLs. (mingw-w64)"
 arch=('any')
@@ -19,11 +19,13 @@ depends=("${MINGW_PACKAGE_PREFIX}-libssh2"
 
 options=('staticlibs')
 source=("${url}/download/${_realname}-${pkgver}.tar.xz"
+        "https://github.com/curl/curl/pull/17475.patch"
         "disable-cainfo-for-schannel.patch"
         "0001-Make-cURL-relocatable.patch"
         "0002-nghttp2-static.patch"
         "0004-more-static-fixes.patch")
-sha256sums=('73a4b0e99596a09fa5924a4fb7e4b995a85fda0d18a2c02ab9cf134bebce04ee'
+sha256sums=('b3634cfc538c72c9c6ca794ef4c73d7fdbd171e8dee2db837d83a5e45231002a'
+            'SKIP'
             'SKIP'
             'c4e6bfd5b58f944d75293128effbd22fe42ee0131b915d9230ceb3c004c0322d'
             'SKIP'
@@ -42,11 +44,11 @@ apply_patch_with_msg() {
 
 prepare() {
   cd "${_realname}-${pkgver}"
-  patch -p1 -i "${srcdir}/disable-cainfo-for-schannel.patch"
-
+  
   apply_patch_with_msg \
     0002-nghttp2-static.patch \
-    0004-more-static-fixes.patch
+    disable-cainfo-for-schannel.patch \
+    17475.patch
 
   autoreconf -vfi
 
