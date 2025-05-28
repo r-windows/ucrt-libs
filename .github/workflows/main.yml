@@ -22,7 +22,7 @@ jobs:
         include: [
           { msystem: ucrt64, runner: windows-2022 },
           { msystem: clang64, runner: windows-2022 },
-          { msystem: clangarm64, runner: 'self-hosted' }
+          { msystem: clangarm64, runner: windows-11-arm}
         ]
     name: ${{ matrix.msystem }}
     runs-on: ${{ github.event.inputs.remove_package && 'windows-2022' || matrix.runner }}
@@ -31,20 +31,6 @@ jobs:
       MINGW_ARCH: ${{ matrix.msystem }}
       PACMAN_REPOSITORY: ${{ matrix.msystem }}-libs
     steps:
-
-      - name: Kill old processes
-        timeout-minutes: 2
-        run: |
-          for /l %%x in (1, 1, 5) do (
-          taskkill /IM gpg.exe /F
-          taskkill /IM gpg-agent.exe /F
-          taskkill /IM pacman.exe /F
-          taskkill /IM bash.exe /F
-          taskkill /IM sh.exe /F
-          taskkill /F /FI "MODULES eq msys-2.0.dll"
-          )
-          exit 0
-        shell: cmd
 
       # Requires git-for-windows (msys2 git is not enough)
       - uses: actions/checkout@v4
@@ -80,7 +66,7 @@ jobs:
 
   deploy:
     name: Deploy to staging server
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     needs: [build]
     if: success() && github.ref == 'refs/heads/master'
     steps:
