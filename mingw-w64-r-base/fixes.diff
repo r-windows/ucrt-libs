@@ -1,0 +1,14 @@
+diff -aurp R-4.5.0/src/extra/intl/dcigettext.c R-4.5.0-patched/src/extra/intl/dcigettext.c
+--- R-4.5.0/src/extra/intl/dcigettext.c	2025-03-05 15:03:20
++++ R-4.5.0-patched/src/extra/intl/dcigettext.c	2025-05-29 23:11:46
+@@ -29,6 +29,10 @@
+ # include <config.h>
+ #endif
+ 
++#ifdef HAVE_STDALIGN_H
++# include <stdalign.h>
++#endif
++
+ /* NL_LOCALE_NAME does not work in glibc-2.4.  Ignore it.  */
+ #undef HAVE_NL_LOCALE_NAME
+ 
