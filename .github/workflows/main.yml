@@ -17,12 +17,12 @@ jobs:
   build:
     timeout-minutes: 600
     strategy:
-      fail-fast: true
+      fail-fast: false
       matrix:
         include: [
-          { msystem: ucrt64, runner: windows-2022 },
-          { msystem: clang64, runner: windows-2022 },
-          { msystem: clangarm64, runner: windows-11-arm}
+          { msystem: ucrt64, runner: windows-2019 },
+          { msystem: mingw64, runner: windows-2019 },
+          { msystem: mingw32, runner: windows-2019}
         ]
     name: ${{ matrix.msystem }}
     runs-on: ${{ github.event.inputs.remove_package && 'windows-2022' || matrix.runner }}

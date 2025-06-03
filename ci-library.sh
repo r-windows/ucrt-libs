@@ -95,8 +95,8 @@ _build_add() {
 _download_previous() {
     local filenames=("${@}")
     for filename in "${filenames[@]}"; do
-        if ! curl -fsSOL "https://ftp.opencpu.org/msys2/${PACMAN_REPOSITORY}/${filename}"; then
-            echo "Failed to get https://ftp.opencpu.org/msys2/${PACMAN_REPOSITORY}/${filename}"
+        if ! curl -fsSOL "https://ftp.opencpu.org/rtools/${PACMAN_REPOSITORY}/${filename}"; then
+            echo "Failed to get https://ftp.opencpu.org/rtools/${PACMAN_REPOSITORY}/${filename}"
             rm -f "${filenames[@]}"
             return 1
         fi

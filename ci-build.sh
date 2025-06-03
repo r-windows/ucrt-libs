@@ -13,16 +13,17 @@ if [ "$MINGW_ARCH" == "clangarm64" ]; then
 fi
 
 # Enable custom -next repos (this will break msys2 toolchains that use dll's)
+pacman --noconfirm -Rcsu $(pacman -Qqe | grep "^mingw-w64-")
 cp -f pacman.conf /etc/pacman.conf
 pacman --noconfirm -Scc
-pacman --noconfirm -Sy
+pacman --noconfirm -Syyu
 
 # Downgrades to be compatible with rtools
 pacman --noconfirm --needed -S patch make unzip pactoys
-pacman --noconfirm -S ${MINGW_PACKAGE_PREFIX}-{cc,libtre,pkgconf,xz}
+pacman --noconfirm -S ${MINGW_PACKAGE_PREFIX}-{gcc,libtre,pkg-config,xz}
 
 # Some upstream DLL files
-pacman --noconfirm --needed -Sdd ${MINGW_PACKAGE_PREFIX}-{gcc-libs,libwinpthread}
+#pacman --noconfirm --needed -Sdd ${MINGW_PACKAGE_PREFIX}-{gcc-libs,libwinpthread}
 
 # Avoid libssp dependency
 sed -i 's/-Wp,-D_FORTIFY_SOURCE=2//g' /etc/makepkg_mingw.d/*.conf
