@@ -4,7 +4,7 @@
 _realname=v8
 pkgbase=mingw-w64-${_realname}
 pkgname="${MINGW_PACKAGE_PREFIX}-${_realname}"
-pkgver=14.0.210
+pkgver=14.0.365.4
 pkgrel=1
 pkgdesc="Fast and modern Javascript engine (mingw-w64)"
 arch=('any')
@@ -56,9 +56,8 @@ source=("https://github.com/v8/v8/archive/refs/tags/${pkgver}.tar.gz"
         "v8_libbase.pc"
         "v8_libplatform.pc"
         "v8.pc"
-        "disable-cet.diff"
-        "https://github.com/v8/v8/commit/c26b79d5.patch")
-sha256sums=('a8d553be4130bc5e95e4bb7635958e8f79ecd34aef32de23d3bd7db0b3203760'
+        "disable-cet.diff")
+sha256sums=('af0e8dd57d6a8611a5858a54caf92e43d74346ea123d70a7d2db98abab8949bc'
             '5eb934ca43dfaccad43358820d8a84f1b8229d6330d2e0db1e827081b6858b99'
             'f58b2605f036b8c9c7992635ad5f2070abe4d527314915874766d654ae4eb429'
             '812f67ab2c4269b101df3af90a452867398a668b46c4997cbbde4fffe6c5cbfa'
@@ -92,7 +91,6 @@ sha256sums=('a8d553be4130bc5e95e4bb7635958e8f79ecd34aef32de23d3bd7db0b3203760'
             '71ac09cff81a983c63cbeee405a18b092655e6c608da1ede3aacc568edb80b39'
             'aaeb6759ccbe875babdc48ab394e1a0cc8485731c9311827b3981ba6e85ee688'
             '75a1f195164d830524b02801c82f39628cd51fa15ba59472e37dde4ce97aecd5'
-            'SKIP'
             'SKIP')
 
 apply_patch_with_msg() {
@@ -157,7 +155,6 @@ prepare() {
     012-remove-dllimport-attributes.patch \
     013-builtin-deps-fixes.patch \
     014-heap-use-proper-sources.patch \
-    c26b79d5.patch \
     disable-cet.diff
 
   sed -e "s|@VERSION@|${pkgver}|g" \
