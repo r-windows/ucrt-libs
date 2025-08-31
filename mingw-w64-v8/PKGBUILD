@@ -189,6 +189,8 @@ prepare() {
   # Disable some unsupported compiler warnings
   sed -i '/nontrivial-memcall/Id' ${srcdir}/${_realname}-${pkgver}/build/config/compiler/BUILD.gn
 
+  # Hack for gcc-12
+  sed -e 's/constexpr bool CheckInstanceMapRange/bool CheckInstanceMapRange/g' -i src/objects/instance-type-inl.h
 }
 
 build() {
@@ -229,7 +231,6 @@ build() {
     v8_enable_system_instrumentation=false
     v8_enable_temporal_support=false
     v8_enable_verify_heap=false
-    v8_enable_pointer_compression=false
     v8_symbol_level=${_symbol}
     v8_use_external_startup_data=false
     chrome_pgo_phase=0
