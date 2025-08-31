@@ -186,6 +186,9 @@ prepare() {
   # Avoid libssp dependency
   sed -i '/fortify/Id' ${srcdir}/${_realname}-${pkgver}/build/config/compiler/BUILD.gn
 
+  # Disable some unsupported compiler warnings
+  sed -i '/nontrivial-memcall/Id' ${srcdir}/${_realname}-${pkgver}/build/config/compiler/BUILD.gn
+
 }
 
 build() {
@@ -236,14 +239,14 @@ build() {
     treat_warnings_as_errors=false"
 
   # generate build files for shared library
-  gn gen out/${_buildtype}-${MSYSTEM} --args="${_gn_args} is_component_build=true v8_enable_i18n_support=false"
+  #gn gen out/${_buildtype}-${MSYSTEM} --args="${_gn_args} is_component_build=true v8_enable_i18n_support=false"
 
-  ninja -C out/${_buildtype}-${MSYSTEM} v8 d8 torque torque-language-server mksnapshot
+  #ninja -C out/${_buildtype}-${MSYSTEM} v8 d8 torque torque-language-server mksnapshot
 
   # generate build files for static library
   gn gen out/${_buildtype}-${MSYSTEM}-static --args="${_gn_args} is_component_build=false v8_enable_i18n_support=false v8_monolithic=true"
 
-  ninja -C out/${_buildtype}-${MSYSTEM}-static v8_monolith
+  ninja -C out/${_buildtype}-${MSYSTEM}-static d8 v8_monolith
 }
 
 package() {
@@ -256,13 +259,13 @@ package() {
 
   install -d "${pkgdir}"${MINGW_PREFIX}/{bin,include/{cppgc/internal,libplatform},lib/pkgconfig,share/licenses/${_realname}}
 
-  install -Dm755 out/${_buildtype}-${MSYSTEM}/d8.exe                      "${pkgdir}"${MINGW_PREFIX}/bin/d8.exe
-  install -Dm755 out/${_buildtype}-${MSYSTEM}/torque.exe                  "${pkgdir}"${MINGW_PREFIX}/bin/torque.exe
-  install -Dm755 out/${_buildtype}-${MSYSTEM}/torque-language-server.exe  "${pkgdir}"${MINGW_PREFIX}/bin/torque-language-server.exe
-  install -Dm755 out/${_buildtype}-${MSYSTEM}/mksnapshot.exe              "${pkgdir}"${MINGW_PREFIX}/bin/mksnapshot.exe
-  install -Dm755 out/${_buildtype}-${MSYSTEM}/*.dll                       "${pkgdir}"${MINGW_PREFIX}/bin/
+  #install -Dm755 out/${_buildtype}-${MSYSTEM}/d8.exe                      "${pkgdir}"${MINGW_PREFIX}/bin/d8.exe
+  #install -Dm755 out/${_buildtype}-${MSYSTEM}/torque.exe                  "${pkgdir}"${MINGW_PREFIX}/bin/torque.exe
+  #install -Dm755 out/${_buildtype}-${MSYSTEM}/torque-language-server.exe  "${pkgdir}"${MINGW_PREFIX}/bin/torque-language-server.exe
+  #install -Dm755 out/${_buildtype}-${MSYSTEM}/mksnapshot.exe              "${pkgdir}"${MINGW_PREFIX}/bin/mksnapshot.exe
+  #install -Dm755 out/${_buildtype}-${MSYSTEM}/*.dll                       "${pkgdir}"${MINGW_PREFIX}/bin/
 
-  install -Dm755 out/${_buildtype}-${MSYSTEM}/*.a                         "${pkgdir}"${MINGW_PREFIX}/lib/
+  #install -Dm755 out/${_buildtype}-${MSYSTEM}/*.a                         "${pkgdir}"${MINGW_PREFIX}/lib/
   install -Dm755 out/${_buildtype}-${MSYSTEM}-static/obj/libv8_monolith.a "${pkgdir}"${MINGW_PREFIX}/lib/
   install -Dm644 "${srcdir}"/*.pc                                         "${pkgdir}"${MINGW_PREFIX}/lib/pkgconfig/
 
