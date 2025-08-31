@@ -1,0 +1,30 @@
+diff --git a/src/base/platform/platform-win32.cc b/src/base/platform/platform-win32.cc
+index 11402689fe9..c0afa0319a8 100644
+--- a/src/base/platform/platform-win32.cc
++++ b/src/base/platform/platform-win32.cc
+@@ -749,7 +749,7 @@ void OS::StrNCpy(char* dest, int length, const char* src, size_t n) {
+ DEFINE_LAZY_LEAKY_OBJECT_GETTER(RandomNumberGenerator,
+                                 GetPlatformRandomNumberGenerator)
+ static LazyMutex rng_mutex = LAZY_MUTEX_INITIALIZER;
+-
++/*
+ namespace {
+ 
+ bool UserShadowStackEnabled() {
+@@ -781,6 +781,7 @@ bool UserShadowStackEnabled() {
+ }
+ 
+ }  // namespace
++*/
+ 
+ void OS::Initialize(AbortMode abort_mode, const char* const gc_fake_mmap) {
+   g_abort_mode = abort_mode;
+@@ -816,7 +817,7 @@ void OS::EnsureWin32MemoryAPILoaded() {
+ 
+ // static
+ bool OS::IsHardwareEnforcedShadowStacksEnabled() {
+-  static bool cet_enabled = UserShadowStackEnabled();
++  static bool cet_enabled = false;
+   return cet_enabled;
+ }
+ 
