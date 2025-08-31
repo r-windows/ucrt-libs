@@ -15,8 +15,7 @@ msys2_references=(
 )
 msys2_repository_url='https://github.com/v8/v8'
 license=('spdx:BSD-3-Clause')
-depends=("${MINGW_PACKAGE_PREFIX}-icu"
-         "${MINGW_PACKAGE_PREFIX}-zlib")
+depends=("${MINGW_PACKAGE_PREFIX}-zlib")
 makedepends=("${MINGW_PACKAGE_PREFIX}-cc"
              "${MINGW_PACKAGE_PREFIX}-gn"
              "${MINGW_PACKAGE_PREFIX}-ninja"
@@ -237,7 +236,7 @@ build() {
     treat_warnings_as_errors=false"
 
   # generate build files for shared library
-  gn gen out/${_buildtype}-${MSYSTEM} --args="${_gn_args} is_component_build=true"
+  gn gen out/${_buildtype}-${MSYSTEM} --args="${_gn_args} is_component_build=true v8_enable_i18n_support=false"
 
   ninja -C out/${_buildtype}-${MSYSTEM} v8 d8 torque torque-language-server mksnapshot
 
