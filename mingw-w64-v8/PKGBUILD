@@ -267,7 +267,6 @@ package() {
   #install -Dm755 out/${_buildtype}-${MSYSTEM}/*.a                         "${pkgdir}"${MINGW_PREFIX}/lib/
   install -Dm755 out/${_buildtype}-${MSYSTEM}-static/obj/libv8_monolith.a "${pkgdir}"${MINGW_PREFIX}/lib/
   install -Dm644 "${srcdir}"/*.pc                                         "${pkgdir}"${MINGW_PREFIX}/lib/pkgconfig/
-
   install -Dm644 include/*.h                                              "${pkgdir}"${MINGW_PREFIX}/include/
   install -Dm644 include/cppgc/*.h                                        "${pkgdir}"${MINGW_PREFIX}/include/cppgc/
   install -Dm644 include/cppgc/internal/*.h                               "${pkgdir}"${MINGW_PREFIX}/include/cppgc/internal/

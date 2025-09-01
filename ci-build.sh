@@ -19,7 +19,7 @@ pacman --noconfirm -Sy
 
 # Downgrades to be compatible with rtools
 pacman --noconfirm --needed -S patch make unzip pactoys
-pacman --noconfirm -S ${MINGW_PACKAGE_PREFIX}-{cc,libtre,pkgconf,xz}
+pacman --noconfirm -S ${MINGW_PACKAGE_PREFIX}-{cc,libtre,pkgconf,xz,winpthreads-git}
 
 # Some upstream DLL files
 pacman --noconfirm --needed -Sdd ${MINGW_PACKAGE_PREFIX}-{gcc-libs,libwinpthread}
