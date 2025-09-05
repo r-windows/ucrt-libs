@@ -26,7 +26,6 @@ makedepends=("${MINGW_PACKAGE_PREFIX}-pkgconf"
 depends=("${MINGW_PACKAGE_PREFIX}-gcc-libs"
          "${MINGW_PACKAGE_PREFIX}-cairo"
          "${MINGW_PACKAGE_PREFIX}-freetype"
-         "${MINGW_PACKAGE_PREFIX}-fontconfig"
          "${MINGW_PACKAGE_PREFIX}-glib2"
          "${MINGW_PACKAGE_PREFIX}-harfbuzz"
          "${MINGW_PACKAGE_PREFIX}-fribidi")
@@ -59,6 +58,7 @@ build() {
     --auto-features=enabled \
     -Ddocumentation=false \
     -Dintrospection=disabled \
+    -Dfontconfig=disabled \
     -Dlibthai=disabled \
     -Dxft=disabled \
     --wrap-mode=nofallback \
@@ -79,6 +79,7 @@ build() {
     --auto-features=enabled \
     -Ddocumentation=false \
     -Dintrospection=disabled \
+    -Dfontconfig=disabled \
     -Dlibthai=disabled \
     --wrap-mode=nofallback \
     -Dxft=disabled \
