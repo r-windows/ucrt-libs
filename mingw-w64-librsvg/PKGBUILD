@@ -50,6 +50,15 @@ build() {
   # https://github.com/msys2/MINGW-packages/pull/13622#issuecomment-1285820970
   export WINAPI_NO_BUNDLED_LIBRARIES=1
 
+  local -a _static_flags=(
+    -DGIO_STATIC_COMPILATION
+    -DGLIB_STATIC_COMPILATION
+    -DGMODULE_STATIC_COMPILATION
+    -DGOBJECT_STATIC_COMPILATION
+  )
+
+  CFLAGS+=" ${_static_flags[@]}" \
+  CXXFLAGS+=" ${_static_flags[@]}" \
   MSYS2_ARG_CONV_EXCL="--prefix=" \
     meson setup \
       --prefix="${MINGW_PREFIX}" \
