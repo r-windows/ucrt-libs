@@ -20,7 +20,7 @@ makedepends=("${MINGW_PACKAGE_PREFIX}-cc"
              "${MINGW_PACKAGE_PREFIX}-libpng"
              "${MINGW_PACKAGE_PREFIX}-meson"
              "${MINGW_PACKAGE_PREFIX}-ninja")
-depends=("${MINGW_PACKAGE_PREFIX}-cc-libs")
+depends=("${MINGW_PACKAGE_PREFIX}-gcc-libs")
 source=("https://xorg.freedesktop.org/releases/individual/lib/pixman-${pkgver}.tar.xz")
 noextract=("pixman-${pkgver}.tar.xz")
 sha256sums=('a098c33924754ad43f981b740f6d576c70f9ed1006e12221b1845431ebce1239')
