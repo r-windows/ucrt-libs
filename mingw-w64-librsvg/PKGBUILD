@@ -74,7 +74,10 @@ build() {
       --wrap-mode=nodownload \
       --auto-features=enabled \
       --buildtype=plain \
+      -Dintrospection=disabled \
       -Davif=disabled \
+      -Dtests=false \
+      -Ddocs=disabled \
       "build-${MSYSTEM}" \
       "${_realname}-${pkgver}"
 
