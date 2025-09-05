@@ -4,42 +4,40 @@
 _realname=pango
 pkgbase=mingw-w64-${_realname}
 pkgname=("${MINGW_PACKAGE_PREFIX}-${_realname}")
-pkgver=1.50.14
-pkgrel=3
+pkgver=1.56.4
+pkgrel=2
 pkgdesc="A library for layout and rendering of text (mingw-w64)"
 arch=('any')
-mingw_arch=('mingw32' 'mingw64' 'ucrt64' 'clang64' 'clang32' 'clangarm64')
+mingw_arch=('mingw32' 'mingw64' 'ucrt64' 'clang64' 'clangarm64')
 url="https://www.pango.org/"
+msys2_repository_url="https://gitlab.gnome.org/GNOME/pango"
+msys2_references=(
+  "cpe: cpe:/a:gnome:pango"
+  "cpe: cpe:/a:pango:pango"
+)
 license=('spdx:LGPL-2.1')
-makedepends=("${MINGW_PACKAGE_PREFIX}-pkg-config"
+makedepends=("${MINGW_PACKAGE_PREFIX}-pkgconf"
+             "${MINGW_PACKAGE_PREFIX}-gobject-introspection"
              "${MINGW_PACKAGE_PREFIX}-meson"
              "${MINGW_PACKAGE_PREFIX}-gi-docgen"
+             "${MINGW_PACKAGE_PREFIX}-python-docutils"
              "${MINGW_PACKAGE_PREFIX}-cc"
-             "help2man")
-depends=("${MINGW_PACKAGE_PREFIX}-gcc-libs"
+             "${MINGW_PACKAGE_PREFIX}-cmake")
+depends=("${MINGW_PACKAGE_PREFIX}-cc-libs"
          "${MINGW_PACKAGE_PREFIX}-cairo"
          "${MINGW_PACKAGE_PREFIX}-freetype"
+         "${MINGW_PACKAGE_PREFIX}-fontconfig"
          "${MINGW_PACKAGE_PREFIX}-glib2"
          "${MINGW_PACKAGE_PREFIX}-harfbuzz"
          "${MINGW_PACKAGE_PREFIX}-fribidi")
-options=('staticlibs' 'strip' 'emptydirs')
 source=("https://download.gnome.org/sources/pango/${pkgver:0:4}/${_realname}-${pkgver}.tar.xz"
-        "0001-DWrite-Check-length-of-the-font-table.patch"
-        "https://gitlab.gnome.org/GNOME/pango/-/merge_requests/693.patch"
-        "https://gitlab.gnome.org/GNOME/pango/-/merge_requests/694.patch")
-sha256sums=('1d67f205bfc318c27a29cfdfb6828568df566795df0cb51d2189cde7f2d581e8'
-            '9a21e1aa158610975922b355faa0a89908d5ad066284a749e05dda309d6f0776'
-            'bcffc93e63b12c0d168e5694531e4122ff142dfbe475708573c1150b133c8636'
-            '44c1233b81ecab73947836012ccaff1b1a7e73245ba05b2c1a5dd17fcdc035aa')
+        "https://gitlab.gnome.org/GNOME/pango/-/merge_requests/883.patch")
+sha256sums=('17065e2fcc5f5a5bdbffc884c956bfc7c451a96e8c4fb2f8ad837c6413cb5a01'
+            'b34c429bef61f2ad02eb74d03ce4c5d32c5b866de17227839054ad157414826b')
 
 prepare() {
-  cd "${srcdir}/${_realname}-${pkgver}"
-
-  # https://gitlab.gnome.org/GNOME/pango/-/merge_requests/689
-  patch -p1 -i "${srcdir}/0001-DWrite-Check-length-of-the-font-table.patch"
-
-  patch -p1 -i "${srcdir}/693.patch"
-  patch -p1 -i "${srcdir}/694.patch"
+  cd "${_realname}-${pkgver}"
+  patch -p1 -i "${srcdir}/883.patch"
 }
 
 build() {
@@ -51,9 +49,7 @@ build() {
     -DCAIRO_WIN32_STATIC_BUILD
   )
 
-  [[ -d build-${MSYSTEM} ]] && rm -rf build-${MSYSTEM}
-  mkdir -p build-${MSYSTEM}
-  cd build-${MSYSTEM}
+  mkdir -p build-${MSYSTEM} && cd build-${MSYSTEM}
 
   MSYS2_ARG_CONV_EXCL="--prefix=" \
   ${MINGW_PREFIX}/bin/meson setup \
@@ -61,9 +57,8 @@ build() {
     --default-library shared \
     --buildtype plain \
     --auto-features=enabled \
-    -Dgtk_doc=false \
+    -Ddocumentation=false \
     -Dintrospection=disabled \
-    -Dfontconfig=disabled \
     -Dlibthai=disabled \
     -Dxft=disabled \
     --wrap-mode=nofallback \
@@ -72,9 +67,7 @@ build() {
   ${MINGW_PREFIX}/bin/meson compile
 
   cd "${srcdir}"
-  [[ -d build-static-${MSYSTEM} ]] && rm -rf build-static-${MSYSTEM}
-  mkdir -p build-static-${MSYSTEM}
-  cd build-static-${MSYSTEM}
+  mkdir -p build-static-${MSYSTEM} && cd build-static-${MSYSTEM}
 
   CFLAGS+=" ${_static_flags[@]}" \
   CXXFLAGS+=" ${_static_flags[@]}" \
@@ -84,9 +77,8 @@ build() {
     --default-library static \
     --buildtype plain \
     --auto-features=enabled \
-    -Dgtk_doc=false \
+    -Ddocumentation=false \
     -Dintrospection=disabled \
-    -Dfontconfig=disabled \
     -Dlibthai=disabled \
     --wrap-mode=nofallback \
     -Dxft=disabled \
@@ -103,9 +95,9 @@ check() {
   ${MINGW_PREFIX}/bin/meson test || warning "Tests failed"
 }
 
-package() {
-  meson install -C "${srcdir}/build-${MSYSTEM}" --destdir "${pkgdir}"
+package_pango() {
   meson install -C "${srcdir}/build-static-${MSYSTEM}" --destdir "${pkgdir}"
+  meson install -C "${srcdir}/build-${MSYSTEM}" --destdir "${pkgdir}"
 
   # remove installed tests, no need and they contain the build path which
   # leads to pkgbuild warnings
@@ -116,3 +108,13 @@ package() {
   install -Dm644 "${srcdir}/${_realname}-${pkgver}/COPYING" "${pkgdir}${MINGW_PREFIX}/share/licenses/${_realname}/COPYING"
 }
 
+# template start; name=mingw-w64-splitpkg-wrappers; version=1.0;
+# vim: set ft=bash :
+
+# generate wrappers
+for _name in "${pkgname[@]}"; do
+  _short="package_${_name#${MINGW_PACKAGE_PREFIX}-}"
+  _func="$(declare -f "${_short}")"
+  eval "${_func/#${_short}/package_${_name}}"
+done
+# template end;
