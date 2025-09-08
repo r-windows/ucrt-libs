@@ -1,8 +1,8 @@
 _realname=poppler
 pkgbase=mingw-w64-${_realname}
 pkgname="${MINGW_PACKAGE_PREFIX}-${_realname}"
-pkgver=23.08.0
-pkgrel=9000
+pkgver=25.09.1
+pkgrel=1
 pkgdesc="PDF rendering library based on xpdf 3.0 (mingw-w64)"
 arch=('any')
 url="https://poppler.freedesktop.org/"
@@ -18,12 +18,13 @@ depends=("${MINGW_PACKAGE_PREFIX}-cairo"
          "${MINGW_PACKAGE_PREFIX}-libpng"
          "${MINGW_PACKAGE_PREFIX}-libtiff"
          "${MINGW_PACKAGE_PREFIX}-openjpeg2"
-         "${MINGW_PACKAGE_PREFIX}-poppler-data"
          "${MINGW_PACKAGE_PREFIX}-zlib")
 source=(https://poppler.freedesktop.org/${_realname}-${pkgver}.tar.xz{,.sig}
+        test::git+https://gitlab.freedesktop.org/poppler/test.git#commit=ff3133cdb6cb496ee1d2c3231bfa35006a5e8410
         '0001-nopython-generate-enums.patch')
-sha256sums=('4a4bf7fc903b9f1a2ab7d04b7c5d8220db9bc6261cc73fdb9a826dc272f49aa8'
+sha256sums=('0c1091d01d3dd1664a13816861e812d02b29201e96665454b81b52d261fad658'
             'SKIP'
+            '0efc9bd1797f0f0dfa514d4109e82c99d7e98c3e95587c70945508493074fcdf'
             '315356263b5ebee5431a2e079ac76492a8919a04a798f6c6d53c64f44b433db6')
 validpgpkeys=('CA262C6C83DE4D2FB28A332A3A6A4DB839EAA6D7')
 
@@ -49,6 +50,7 @@ mkdir -p ${srcdir}/build-shared && cd ${srcdir}/build-shared
     -DENABLE_UNSTABLE_API_ABI_HEADERS=OFF \
     -DENABLE_BOOST=OFF \
     -DENABLE_GTK_DOC=OFF \
+    -DENABLE_GPGME=OFF \
     -DENABLE_GLIB=OFF \
     -DENABLE_QT5=OFF \
     -DENABLE_QT6=OFF \
@@ -81,10 +83,11 @@ mkdir -p ${srcdir}/build-shared && cd ${srcdir}/build-shared
     -DENABLE_UNSTABLE_API_ABI_HEADERS=OFF \
     -DENABLE_BOOST=OFF \
     -DENABLE_GTK_DOC=OFF \
+    -DENABLE_GPGME=OFF \
     -DENABLE_GLIB=OFF \
     -DENABLE_QT5=OFF \
     -DENABLE_QT6=OFF \
-    -DENABLE_NSS=OFF \
+    -DENABLE_NSS3=OFF \
     -DENABLE_LIBCURL=OFF \
     -DBUILD_GTK_TESTS=OFF \
     -DENABLE_CMS=lcms2 \
