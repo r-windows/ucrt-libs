@@ -9,7 +9,7 @@ pkgdesc="Open Source Computer Vision Library (mingw-w64)"
 arch=('any')
 url="https://opencv.org/"
 license=("BSD")
-depends=("${MINGW_PACKAGE_PREFIX}-libjpeg"
+depends=("${MINGW_PACKAGE_PREFIX}-libjpeg-turbo"
          "${MINGW_PACKAGE_PREFIX}-libpng"
          "${MINGW_PACKAGE_PREFIX}-libtiff"
          "${MINGW_PACKAGE_PREFIX}-libwebp"
