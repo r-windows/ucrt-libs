@@ -1,5 +1,4 @@
 # Contributor: Edward E. <develinthedetail@gmail.com>
-
 _realname=libheif
 pkgbase=mingw-w64-${_realname}
 pkgname=("${MINGW_PACKAGE_PREFIX}-${_realname}")

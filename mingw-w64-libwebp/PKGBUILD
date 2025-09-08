@@ -1,6 +1,5 @@
 # Maintainer: Alexey Pavlov <alexpux@gmail.com>
 # Contributor: Andrew Sun <adsun701@gmail.com>
-
 _realname=libwebp
 pkgbase=mingw-w64-${_realname}
 pkgname=("${MINGW_PACKAGE_PREFIX}-${_realname}")
