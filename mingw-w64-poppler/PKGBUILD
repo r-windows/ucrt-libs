@@ -18,6 +18,7 @@ depends=("${MINGW_PACKAGE_PREFIX}-cairo"
          "${MINGW_PACKAGE_PREFIX}-libpng"
          "${MINGW_PACKAGE_PREFIX}-libtiff"
          "${MINGW_PACKAGE_PREFIX}-openjpeg2"
+         "${MINGW_PACKAGE_PREFIX}-poppler-data"
          "${MINGW_PACKAGE_PREFIX}-zlib")
 source=(https://poppler.freedesktop.org/${_realname}-${pkgver}.tar.xz{,.sig}
         test::git+https://gitlab.freedesktop.org/poppler/test.git#commit=ff3133cdb6cb496ee1d2c3231bfa35006a5e8410
