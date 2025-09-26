@@ -25,7 +25,7 @@ makedepends=("${MINGW_PACKAGE_PREFIX}-cc"
 source=("https://github.com/v8/v8/archive/refs/tags/${pkgver}.tar.gz"
         "bare-clones/build::git+https://chromium.googlesource.com/chromium/src/build.git#commit=cb592905b1f94a0c315dccb59939f91ef869592c"
         "bare-clones/clang::git+https://chromium.googlesource.com/chromium/src/tools/clang.git#commit=d6072980974f9a4922d2eb27e4fd244ca3017031"
-        "bare-clones/abseil-cpp::git+https://chromium.googlesource.com/chromium/src/third_party/abseil-cpp.git#commit=cae4b6a3990e1431caa09c7b2ed1c76d0dfeab17"
+        "bare-clones/abseil-cpp::git+https://chromium.googlesource.com/chromium/src/third_party/abseil-cpp.git#commit=5141e83267542f8869adf18b5bd6440440d6801e"
         "bare-clones/dragonbox::git+https://chromium.googlesource.com/external/github.com/jk-jeon/dragonbox.git#commit=6c7c925b571d54486b9ffae8d9d18a822801cbda"
         "bare-clones/fast_float::git+https://chromium.googlesource.com/external/github.com/fastfloat/fast_float.git#commit=cb1d42aaa1e14b09e1452cfdef373d051b8c02a4"
         "bare-clones/fp16::git+https://chromium.googlesource.com/external/github.com/Maratyszcza/FP16.git#commit=0a92994d729ff76a58f692d3028ca1b64b145d91"
@@ -60,7 +60,7 @@ source=("https://github.com/v8/v8/archive/refs/tags/${pkgver}.tar.gz"
 sha256sums=('5e776e074ac4ca8f7e7bae921ff0d7333b1ec394a637b3716bc4613b8cb5b350'
             '5eb934ca43dfaccad43358820d8a84f1b8229d6330d2e0db1e827081b6858b99'
             'f58b2605f036b8c9c7992635ad5f2070abe4d527314915874766d654ae4eb429'
-            '812f67ab2c4269b101df3af90a452867398a668b46c4997cbbde4fffe6c5cbfa'
+            'SKIP'
             '7a6c373f8694e540f5a767b315670ccef5526baa41f5427f02db2e4bf261765c'
             'be05ebb53b7468e246aac2a22d1ce748c25e2e0cc5d0227e16272a00827092ff'
             '5d0c4f261d36707f926fa9ef9a39349f1cccac8ae6443a8f8571c1625eb90c41'
