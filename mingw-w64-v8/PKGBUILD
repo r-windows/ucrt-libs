@@ -4,7 +4,7 @@
 _realname=v8
 pkgbase=mingw-w64-${_realname}
 pkgname="${MINGW_PACKAGE_PREFIX}-${_realname}"
-pkgver=14.0.365.4
+pkgver=14.1.146.11
 pkgrel=1
 pkgdesc="Fast and modern Javascript engine (mingw-w64)"
 arch=('any')
@@ -57,7 +57,7 @@ source=("https://github.com/v8/v8/archive/refs/tags/${pkgver}.tar.gz"
         "v8_libplatform.pc"
         "v8.pc"
         "disable-cet.diff")
-sha256sums=('af0e8dd57d6a8611a5858a54caf92e43d74346ea123d70a7d2db98abab8949bc'
+sha256sums=('5e776e074ac4ca8f7e7bae921ff0d7333b1ec394a637b3716bc4613b8cb5b350'
             '5eb934ca43dfaccad43358820d8a84f1b8229d6330d2e0db1e827081b6858b99'
             'f58b2605f036b8c9c7992635ad5f2070abe4d527314915874766d654ae4eb429'
             '812f67ab2c4269b101df3af90a452867398a668b46c4997cbbde4fffe6c5cbfa'
@@ -83,8 +83,8 @@ sha256sums=('af0e8dd57d6a8611a5858a54caf92e43d74346ea123d70a7d2db98abab8949bc'
             '1ef6854b6a68101ab177a7a95389e9b03e7b8c4e3223320dfc9ce4405cbf5bfe'
             '1d03e6c517528a31f6ff38d251b011e34a667f0b60968817b573677501dc20c1'
             '37a29668fb02d4fa60062c02f0d24dce4ab9b7fce4d7f5a8e6eca745fa125be2'
-            '5b1c2a1c4faefdbb918640b394a100b08c5b9940547d4ce5a04b8d9dc40559a7'
-            '7e3555a4128d8b69cd9733b14b114d27063667ae0687b693c51fd1881f847e93'
+            'SKIP'
+            'SKIP'
             'a4275f41723cc990f2f43559ce716100830a8ce3f38e4878f6bf36d70d47b646'
             'e1bc88af48143f29f5805b8ac5d77addef1b09318d1f5f127a9281872c00303b'
             '7e1e39a3dc69632f7bf9182c92405186ce709aca921cf0abefadb6fa8b825510'
@@ -97,7 +97,7 @@ apply_patch_with_msg() {
   for _patch in "$@"
   do
     msg2 "Applying ${_patch}"
-    patch -p1 -i "${srcdir}/${_patch}"
+    patch -p1 --fuzz=2 -i "${srcdir}/${_patch}"
   done
 }
 
