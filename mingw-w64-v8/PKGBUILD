@@ -200,14 +200,14 @@ build() {
   local _buildtype=Release
   local _debug=false
   local _symbol=0
-  if check_option "debug" "y"; then
+  #if check_option "debug" "y"; then
     _buildtype=Debug
     _debug=true
     _symbol=2
-  fi
+  #fi
 
   local _arch=x64
-  local _cfg=true
+  local _cfg=false
   if [[ ${CARCH} == aarch64 ]]; then
     _arch=arm64
     _cfg=false
@@ -256,9 +256,9 @@ package() {
   cd ${_realname}-${pkgver}
 
   local _buildtype=Release
-  if check_option "debug" "y"; then
+  #if check_option "debug" "y"; then
     _buildtype=Debug
-  fi
+  #fi
 
   install -d "${pkgdir}"${MINGW_PREFIX}/{bin,include/{cppgc/internal,libplatform},lib/pkgconfig,share/licenses/${_realname}}
 
