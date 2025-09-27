@@ -5,7 +5,7 @@ _realname=v8
 pkgbase=mingw-w64-${_realname}
 pkgname="${MINGW_PACKAGE_PREFIX}-${_realname}"
 pkgver=14.1.146.11
-pkgrel=1
+pkgrel=2
 pkgdesc="Fast and modern Javascript engine (mingw-w64)"
 arch=('any')
 mingw_arch=('mingw64' 'ucrt64' 'clang64' 'clangarm64')
@@ -97,7 +97,7 @@ apply_patch_with_msg() {
   for _patch in "$@"
   do
     msg2 "Applying ${_patch}"
-    patch -p1 --fuzz=2 -i "${srcdir}/${_patch}"
+    patch -p1 -i "${srcdir}/${_patch}"
   done
 }
 
@@ -207,7 +207,7 @@ build() {
   fi
 
   local _arch=x64
-  local _cfg=true
+  local _cfg=false
   if [[ ${CARCH} == aarch64 ]]; then
     _arch=arm64
     _cfg=false
