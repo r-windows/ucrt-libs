@@ -220,7 +220,7 @@ build() {
 
   local _gn_args="
     target_cpu=\"${_arch}\"
-    is_debug=${_debug}
+    is_debug=true
     is_clang=${_clang}
     use_custom_libcxx=false
     use_libcxx_modules=false
