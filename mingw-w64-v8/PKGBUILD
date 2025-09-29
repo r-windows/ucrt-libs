@@ -233,6 +233,8 @@ build() {
     v8_enable_temporal_support=false
     v8_enable_verify_heap=false
     v8_symbol_level=${_symbol}
+    v8_static_library=true
+    v8_enable_sandbox=false
     v8_use_external_startup_data=false
     chrome_pgo_phase=0
     clang_use_chrome_plugins=false
