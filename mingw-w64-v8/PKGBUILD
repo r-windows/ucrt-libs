@@ -168,6 +168,15 @@ prepare() {
   sed -e "s|@VERSION@|${pkgver}|g" \
       -e "s|@CFLAGS@|${_cflags}|g" \
       -e "s|@PREFIX@|${MINGW_PREFIX}|g" -i "${srcdir}/v8.pc"
+
+  # Avoid libssp dependency
+  sed -i '/fortify/Id' build/config/compiler/BUILD.gn
+
+  # Silence unsupported compiler warnings (remove after clang-20)
+  sed -i '/nontrivial-memcall/Id' build/config/compiler/BUILD.gn
+
+  # Fix for silly comment warning in clang
+  sed -e 's|^//.*\\$|//|g' -i include/v8-internal.h
 }
 
 build() {
