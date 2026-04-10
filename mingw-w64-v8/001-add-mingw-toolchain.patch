@@ -844,7 +844,7 @@ diff -ruN --ex build-repo/config/win/BUILD.gn build-repo-check/config/win/BUILD.
    if (current_cpu == "x86") {
      asmflags = [
        # When /safeseh is specified, the linker will only produce an image if it
-@@ -212,6 +213,15 @@
+@@ -212,6 +213,16 @@
      # the source file is a no-op.
      "/ignore:4221",
    ]
@@ -856,6 +856,7 @@ diff -ruN --ex build-repo/config/win/BUILD.gn build-repo-check/config/win/BUILD.
 +    if (!is_clang) {
 +      cflags += [ "-fno-keep-inline-dllexport" ]
 +    }
++    defines = [ "__USE_MINGW_ANSI_STDIO=1" ]
 +  }
  }
  
