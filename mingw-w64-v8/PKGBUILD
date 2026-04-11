@@ -211,7 +211,6 @@ build() {
     is_debug=${_debug}
     is_clang=${_clang}
     use_custom_libcxx=false
-    use_libcxx_modules=false
     use_lld=false
     use_siso=false
     use_sysroot=false
@@ -234,7 +233,6 @@ build() {
 
   # generate build files for shared library
   #gn gen out/${_buildtype}-${MSYSTEM} --args="${_gn_args} is_component_build=true"
-
   #ninja -C out/${_buildtype}-${MSYSTEM} v8 d8 torque torque-language-server mksnapshot
 
   # generate build files for static library

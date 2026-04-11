@@ -19,7 +19,7 @@ pacman --noconfirm -Sy
 
 # Downgrades to be compatible with rtools
 pacman --noconfirm --needed -S patch make unzip pactoys
-pacman --noconfirm -S ${MINGW_PACKAGE_PREFIX}-{cc,libtre,pkgconf,xz,winpthreads-git}
+pacman --noconfirm -S ${MINGW_PACKAGE_PREFIX}-{cc,libtre,pkgconf,xz,winpthreads-git,headers-git}
 
 # Some upstream DLL files
 pacman --noconfirm --needed -Sdd ${MINGW_PACKAGE_PREFIX}-{gcc-libs,libwinpthread}
@@ -27,6 +27,16 @@ pacman --noconfirm --needed -Sdd ${MINGW_PACKAGE_PREFIX}-{gcc-libs,libwinpthread
 # Avoid libssp dependency
 sed -i 's/-Wp,-D_FORTIFY_SOURCE=2//g' /etc/makepkg_mingw.d/*.conf
 sed -i 's/-fstack-protector-strong//g' /etc/makepkg_mingw.d/*.conf
+
+# Disable newish libc++ features
+if [ "$MINGW_ARCH" != "ucrt64" ]; then
+pacman --noconfirm --needed -Sdd $MINGW_ARCH/${MINGW_PACKAGE_PREFIX}-libc++
+echo "Patching libc++......."
+sed -i 's/_IN_LLVM_23 1/_IN_LLVM_23 0/' /$MINGW_ARCH/include/c++/v1/__configuration/availability.h
+sed -i 's/_IN_LLVM_22 1/_IN_LLVM_22 0/' /$MINGW_ARCH/include/c++/v1/__configuration/availability.h
+sed -i 's/_IN_LLVM_21 1/_IN_LLVM_21 0/' /$MINGW_ARCH/include/c++/v1/__configuration/availability.h
+sed -i 's/_IN_LLVM_20 1/_IN_LLVM_20 0/' /$MINGW_ARCH/include/c++/v1/__configuration/availability.h
+fi
 
 # Initiate git
 #git_config user.email 'ci@msys2.org'
