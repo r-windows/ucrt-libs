@@ -178,8 +178,10 @@ prepare() {
   # Fix for silly comment warning in clang
   sed -e 's|^//.*\\$|//|g' -i include/v8-internal.h
 
+  # Fix ucrt linking errors '__local_stdio_printf_options'
   sed -e 's|_MSC_VER|9999|g' -i src/utils/ostreams.cc
   sed -e 's|MINGW_HAS_SECURE_API|BLABLA|g' -i src/base/platform/platform-win32.cc
+  sed -e 's|_vsnprintf|vsnprintf|g' -i src/base/platform/platform-win32.cc
 }
 
 build() {
