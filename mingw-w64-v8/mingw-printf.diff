@@ -1,0 +1,62 @@
+diff --git a/src/base/platform/platform-win32.cc b/src/base/platform/platform-win32.cc
+index f5d9ddce..3d9ce1f6 100644
+--- a/src/base/platform/platform-win32.cc
++++ b/src/base/platform/platform-win32.cc
+@@ -10,12 +10,12 @@
+ // on Windows XP. Make sure MINGW_HAS_SECURE_API is not defined to
+ // disable definition of secure API functions in standard headers that
+ // would conflict with our own implementation.
+-#ifdef __MINGW32__
+-#include <_mingw.h>
+-#ifdef MINGW_HAS_SECURE_API
+-#undef MINGW_HAS_SECURE_API
+-#endif  // MINGW_HAS_SECURE_API
+-#endif  // __MINGW32__
++//#ifdef __MINGW32__
++//#include <_mingw.h>
++//#ifdef MINGW_HAS_SECURE_API
++//#undef MINGW_HAS_SECURE_API
++//#endif  // MINGW_HAS_SECURE_API
++//#endif  // __MINGW32__
+ 
+ #include <windows.h>
+ 
+@@ -101,11 +101,11 @@ int _wfopen_s(FILE** pFile, const wchar_t* filename, const wchar_t* mode) {
+   return *pFile != nullptr ? 0 : 1;
+ }
+ 
+-int _vsnprintf_s(char* buffer, size_t sizeOfBuffer, size_t count,
+-                 const char* format, va_list argptr) {
+-  DCHECK(count == _TRUNCATE);
+-  return _vsnprintf(buffer, sizeOfBuffer, format, argptr);
+-}
++//int _vsnprintf_s(char* buffer, size_t sizeOfBuffer, size_t count,
++//                 const char* format, va_list argptr) {
++//  DCHECK(count == _TRUNCATE);
++//  return _vsnprintf(buffer, sizeOfBuffer, format, argptr);
++//}
+ 
+ 
+ int strncpy_s(char* dest, size_t dest_size, const char* source, size_t count) {
+@@ -719,7 +719,7 @@ int OS::SNPrintF(char* str, int length, const char* format, ...) {
+ 
+ 
+ int OS::VSNPrintF(char* str, int length, const char* format, va_list args) {
+-  int n = _vsnprintf_s(str, length, _TRUNCATE, format, args);
++  int n = vsnprintf(str, length, format, args);
+   // Make sure to zero-terminate the string if the output was
+   // truncated or if there was an error.
+   if (n < 0 || n >= length) {
+diff --git a/src/utils/ostreams.cc b/src/utils/ostreams.cc
+index 36a8080c..e143c0b0 100644
+--- a/src/utils/ostreams.cc
++++ b/src/utils/ostreams.cc
+@@ -11,7 +11,7 @@
+ 
+ #if V8_OS_WIN
+ #include <windows.h>
+-#if _MSC_VER < 1900
++#if defined(_MSC_VER) && _MSC_VER < 1900
+ #define snprintf sprintf_s
+ #endif
+ #endif

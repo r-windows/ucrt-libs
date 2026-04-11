@@ -56,7 +56,8 @@ source=("https://github.com/v8/v8/archive/refs/tags/${pkgver}.tar.gz"
         "v8_libbase.pc"
         "v8_libplatform.pc"
         "v8.pc"
-        "disable-cet.diff")
+        "disable-cet.diff"
+        "mingw-printf.diff")
 sha256sums=('9967736b8381fdf34de72c3f84eebbdb30a867cb94d9a8ff6993504549cc65b5'
             'SKIP'
             'SKIP'
@@ -91,6 +92,7 @@ sha256sums=('9967736b8381fdf34de72c3f84eebbdb30a867cb94d9a8ff6993504549cc65b5'
             '71ac09cff81a983c63cbeee405a18b092655e6c608da1ede3aacc568edb80b39'
             'aaeb6759ccbe875babdc48ab394e1a0cc8485731c9311827b3981ba6e85ee688'
             '75a1f195164d830524b02801c82f39628cd51fa15ba59472e37dde4ce97aecd5'
+            'SKIP'
             'SKIP')
 
 apply_patch_with_msg() {
@@ -155,7 +157,8 @@ prepare() {
     012-remove-dllimport-attributes.patch \
     013-builtin-deps-fixes.patch \
     014-heap-use-proper-sources.patch \
-    disable-cet.diff
+    disable-cet.diff \
+    mingw-printf.diff
 
   sed -e "s|@VERSION@|${pkgver}|g" \
       -e "s|@CFLAGS@|${_cflags}|g" \
@@ -177,11 +180,6 @@ prepare() {
 
   # Fix for silly comment warning in clang
   sed -e 's|^//.*\\$|//|g' -i include/v8-internal.h
-
-  # Fix ucrt linking errors '__local_stdio_printf_options'
-  sed -e 's|_MSC_VER|9999|g' -i src/utils/ostreams.cc
-  sed -e 's|MINGW_HAS_SECURE_API|BLABLA|g' -i src/base/platform/platform-win32.cc
-  sed -e 's|_vsnprintf|vsnprintf|g' -i src/base/platform/platform-win32.cc
 }
 
 build() {
