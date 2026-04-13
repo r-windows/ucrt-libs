@@ -1,73 +1,31 @@
-From: fix abseil MinGW thread-identity and waiter issues
-
-Two related fixes for abseil-cpp when built with MinGW-w64:
-
-1. Force ABSL_THREAD_IDENTITY_MODE_USE_CPP11 on MinGW.
-
-   On MinGW, abseil selects ABSL_THREAD_IDENTITY_MODE_USE_POSIX_SETSPECIFIC
-   because it is excluded from the _WIN32 && !__MINGW32__ CPP11 branch.  In
-   POSIX_SETSPECIFIC mode ClearCurrentThreadIdentity() is a no-op (only an
-   assert in Release builds).  It relies entirely on the pthread runtime
-   clearing the key value before invoking the destructor.  With MinGW's
-   winpthreads and threads created via _beginthreadex (as V8 does), that
-   guarantee can fail: the dying thread's TLS slot is not always cleared
-   before ReclaimThreadIdentity() returns the identity to the free list.  A
-   new thread then allocates that same identity, but the old thread still has
-   a live TLS reference to it.  When V8's WASM engine creates many worker
-   threads (14.x regression vs 11.x) the race becomes frequent enough to
-   trigger the abseil Mutex assertion:
-     Check waitp->thread->waitp == nullptr failed: waiting when shouldn't be
-
-   In CPP11 mode ClearCurrentThreadIdentity() sets thread_identity_ptr=nullptr
-   before the identity is recycled, closing the aliasing window.  This is
-   already the mode used by MSVC (_WIN32 && !__MINGW32__); we extend it to
-   cover MinGW as well.
-
-2. Enable Win32Waiter for MinGW.
-
-   abseil explicitly excludes MinGW from Win32Waiter (which uses the native
-   SRWLOCK / CONDITION_VARIABLE APIs), falling back to StdcppWaiter.  Modern
-   MinGW-w64 as shipped by MSYS2 fully supports these Vista+ APIs.  Using
-   Win32Waiter avoids the StdcppWaiter's stale waiter_count_/wakeup_count_
-   fields on identity reuse (because those fields can be non-zero when an
-   identity is recycled), and also gives better performance.
-
-diff --git a/absl/base/internal/thread_identity.h b/absl/base/internal/thread_identity.h
 --- a/absl/base/internal/thread_identity.h
 +++ b/absl/base/internal/thread_identity.h
-@@ -268,6 +268,14 @@ ABSL_NAMESPACE_END
- #ifdef ABSL_THREAD_IDENTITY_MODE
+@@ -217,6 +217,8 @@
  #error ABSL_THREAD_IDENTITY_MODE cannot be directly set
  #elif defined(ABSL_FORCE_THREAD_IDENTITY_MODE)
  #define ABSL_THREAD_IDENTITY_MODE ABSL_FORCE_THREAD_IDENTITY_MODE
 +#elif defined(__MINGW32__) && defined(ABSL_HAVE_THREAD_LOCAL)
-+// MinGW's winpthreads does not reliably clear pthread TLS before calling key
-+// destructors for _beginthreadex-created threads (as used by V8).  Use C++11
-+// thread_local so that ClearCurrentThreadIdentity() sets thread_identity_ptr
-+// to nullptr before the identity is placed on the free list, preventing a
-+// second thread from aliasing the same ThreadIdentity object.
 +#define ABSL_THREAD_IDENTITY_MODE ABSL_THREAD_IDENTITY_MODE_USE_CPP11
  #elif defined(_WIN32) && !defined(__MINGW32__)
  #define ABSL_THREAD_IDENTITY_MODE ABSL_THREAD_IDENTITY_MODE_USE_CPP11
  #elif defined(__APPLE__) && defined(ABSL_HAVE_THREAD_LOCAL)
-diff --git a/absl/synchronization/internal/win32_waiter.h b/absl/synchronization/internal/win32_waiter.h
 --- a/absl/synchronization/internal/win32_waiter.h
 +++ b/absl/synchronization/internal/win32_waiter.h
-@@ -21,8 +21,8 @@
+@@ -20,7 +20,7 @@
+ #include <sdkddkver.h>
  #endif
  
 -#if defined(_WIN32) && !defined(__MINGW32__) && \
--    _WIN32_WINNT >= _WIN32_WINNT_VISTA
-+// MinGW-w64 ships SRWLOCK/CONDITION_VARIABLE support; enable Win32Waiter.
-+#if defined(_WIN32) && _WIN32_WINNT >= _WIN32_WINNT_VISTA
++#if defined(_WIN32) && \
+     _WIN32_WINNT >= _WIN32_WINNT_VISTA
  
  #include "absl/base/config.h"
- #include "absl/synchronization/internal/kernel_timeout.h"
-@@ -67,7 +67,6 @@ ABSL_NAMESPACE_END
+@@ -66,7 +66,7 @@
+ ABSL_NAMESPACE_END
  }  // namespace absl
  
 -#endif  // defined(_WIN32) && !defined(__MINGW32__) &&
--        // _WIN32_WINNT >= _WIN32_WINNT_VISTA
-+#endif  // defined(_WIN32) && _WIN32_WINNT >= _WIN32_WINNT_VISTA
++#endif  // defined(_WIN32) &&
+         // _WIN32_WINNT >= _WIN32_WINNT_VISTA
  
  #endif  // ABSL_SYNCHRONIZATION_INTERNAL_WIN32_WAITER_H_
