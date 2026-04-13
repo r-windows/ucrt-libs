@@ -1,0 +1,31 @@
+--- a/absl/base/internal/thread_identity.h
++++ b/absl/base/internal/thread_identity.h
+@@ -217,6 +217,8 @@
+ #error ABSL_THREAD_IDENTITY_MODE cannot be directly set
+ #elif defined(ABSL_FORCE_THREAD_IDENTITY_MODE)
+ #define ABSL_THREAD_IDENTITY_MODE ABSL_FORCE_THREAD_IDENTITY_MODE
++#elif defined(__MINGW32__) && defined(ABSL_HAVE_THREAD_LOCAL)
++#define ABSL_THREAD_IDENTITY_MODE ABSL_THREAD_IDENTITY_MODE_USE_CPP11
+ #elif defined(_WIN32) && !defined(__MINGW32__)
+ #define ABSL_THREAD_IDENTITY_MODE ABSL_THREAD_IDENTITY_MODE_USE_CPP11
+ #elif defined(__APPLE__) && defined(ABSL_HAVE_THREAD_LOCAL)
+--- a/absl/synchronization/internal/win32_waiter.h
++++ b/absl/synchronization/internal/win32_waiter.h
+@@ -20,7 +20,7 @@
+ #include <sdkddkver.h>
+ #endif
+ 
+-#if defined(_WIN32) && !defined(__MINGW32__) && \
++#if defined(_WIN32) && \
+     _WIN32_WINNT >= _WIN32_WINNT_VISTA
+ 
+ #include "absl/base/config.h"
+@@ -66,7 +66,7 @@
+ ABSL_NAMESPACE_END
+ }  // namespace absl
+ 
+-#endif  // defined(_WIN32) && !defined(__MINGW32__) &&
++#endif  // defined(_WIN32) &&
+         // _WIN32_WINNT >= _WIN32_WINNT_VISTA
+ 
+ #endif  // ABSL_SYNCHRONIZATION_INTERNAL_WIN32_WAITER_H_
