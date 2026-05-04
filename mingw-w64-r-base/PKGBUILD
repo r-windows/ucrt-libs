@@ -1,0 +1,65 @@
+# Maintainer: Gore Liu <goreliu@126.com>
+
+_realname=r-devel
+pkgbase=mingw-w64-${_realname}
+pkgname=("${MINGW_PACKAGE_PREFIX}-${_realname}")
+pkgver=4.6.0
+pkgrel=1
+pkgdesc="Software environment for statistical computing (mingw-w64)"
+arch=('any')
+mingw_arch=('mingw32' 'mingw64' 'ucrt64' 'clang64' 'clang32' 'clangarm64')
+url='https://www.r-project.org/'
+license=('GPL-2.0-or-later')
+makedepends=("${MINGW_PACKAGE_PREFIX}-cc"
+             "${MINGW_PACKAGE_PREFIX}-fc"
+             "${MINGW_PACKAGE_PREFIX}-pkgconf"
+             "texinfo"
+             "texinfo-tex")
+depends=("${MINGW_PACKAGE_PREFIX}-gcc-libs"
+         "${MINGW_PACKAGE_PREFIX}-bzip2"
+         "${MINGW_PACKAGE_PREFIX}-cairo"
+         "${MINGW_PACKAGE_PREFIX}-curl"
+         "${MINGW_PACKAGE_PREFIX}-icu"
+         "${MINGW_PACKAGE_PREFIX}-libdeflate"
+         "${MINGW_PACKAGE_PREFIX}-libjpeg-turbo"
+         "${MINGW_PACKAGE_PREFIX}-libpng"
+         "${MINGW_PACKAGE_PREFIX}-libtiff"
+         "${MINGW_PACKAGE_PREFIX}-omp"
+         "${MINGW_PACKAGE_PREFIX}-pcre2"
+         "${MINGW_PACKAGE_PREFIX}-tk"
+         "${MINGW_PACKAGE_PREFIX}-xz"
+         "${MINGW_PACKAGE_PREFIX}-zlib")
+checkdepends=("diffutils"
+              "unzip")
+source=("https://cran.r-project.org/src/base/R-4/R-${pkgver}.tar.gz")
+sha256sums=('b8dc9b4543660c7b596b87938df532394350360976527d344228ee0ed12e45ec')
+noextract=(R-${pkgver}.tar.gz)
+
+prepare() {
+  MSYS="winsymlinks:lnk" tar -xf "R-${pkgver}.tar.gz"
+  texindex --version
+  texi2any --version
+  make --version
+  perl --version
+}
+
+build() {
+  cd ${srcdir}/R-${pkgver}/src/gnuwin32
+  echo "WIN =" > MkRules.local
+  if [[ ${MSYSTEM} == CLANG* ]]; then
+    echo "USE_LLVM = 1" >> MkRules.local
+  fi
+  make all
+  make cairodevices
+  make recommended
+}
+
+package() {
+  cd ${srcdir}/src/gnuwin32/installer
+  sed -i '/manual/d' Makefile
+  sed -i '/GW_INFO_FILES/d' Makefile
+  sed -i '/dosfiles.zip/d' Makefile
+  make imagedir
+  mkdir -p ${pkgdir}${MINGW_PREFIX}
+  cp -Rv R-${pkgver} ${pkgdir}${MINGW_PREFIX}/R
+}
