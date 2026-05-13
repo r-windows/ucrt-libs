@@ -1,7 +1,7 @@
 # Maintainer: Alexey Pavlov <alexpux@gmail.com>
 # Contributor: Renato Silva <br.renatosilva@gmail.com>
 
-_with_harfbuzz="yes"
+_with_harfbuzz="no"
 
 _realname=freetype
 pkgbase=mingw-w64-${_realname}
@@ -67,6 +67,7 @@ build() {
 
   if [ "${_with_harfbuzz}" != "yes" ]; then
     extra_config+=("-Dharfbuzz=disabled")
+    extra_config+=("-Dbrotli=disabled")
   fi
 
   MSYS2_ARG_CONV_EXCL="--prefix=" \
