@@ -28,6 +28,12 @@ prepare() {
   tar -xzf "${srcdir}"/${_realname}-${pkgver}.tar.gz -C "${srcdir}" || true
 
   cd "${srcdir}"/${_realname}-${pkgver}
+
+  # clang 20+ rejects the 'template' keyword without a template argument
+  # list (-Wmissing-template-arg-list-after-template-kw). Same fix as in
+  # newer upstream grpc.
+  sed -i 's/Traits::template CallSeqFactory/Traits::CallSeqFactory/' \
+    src/core/lib/promise/detail/basic_seq.h
 }
 
 build() {
