@@ -38,19 +38,6 @@ sed -i 's/_IN_LLVM_21 1/_IN_LLVM_21 0/' /$MINGW_ARCH/include/c++/v1/__configurat
 sed -i 's/_IN_LLVM_20 1/_IN_LLVM_20 0/' /$MINGW_ARCH/include/c++/v1/__configuration/availability.h
 fi
 
-# The pinned winpthreads 11.0.1 references _gnu_exception_handler in its
-# thread SEH data, but mingw-w64 deleted crt_handler.c from the CRT, so
-# linking executables against the static winpthreads fails with the current
-# msys2 crt. Compile the old implementation (public domain, verbatim from
-# mingw-w64 v11.0.1) and add it to the static winpthreads libs.
-if ! nm /$MINGW_ARCH/lib/libmingw32.a 2>/dev/null | grep -q "T _gnu_exception_handler"; then
-  echo "Adding _gnu_exception_handler to static winpthreads"
-  /$MINGW_ARCH/bin/cc -O2 -c crt_handler.c -o crt_handler.o
-  ar rs /$MINGW_ARCH/lib/libpthread.a crt_handler.o
-  ar rs /$MINGW_ARCH/lib/libwinpthread.a crt_handler.o
-  rm -f crt_handler.o
-fi
-
 # Initiate git
 #git_config user.email 'ci@msys2.org'
 #git_config user.name  'MSYS2 Continuous Integration'
