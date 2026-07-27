@@ -5,7 +5,7 @@ _realname=grpc
 pkgbase=mingw-w64-${_realname}
 pkgname=("${MINGW_PACKAGE_PREFIX}-${_realname}")
 pkgver=1.51.1
-pkgrel=1
+pkgrel=2
 pkgdesc="Google's high performance, open source, general RPC framework (mingw-w64)"
 arch=('any')
 mingw_arch=('mingw32' 'mingw64' 'ucrt64' 'clang64' 'clang32' 'clangarm64')
@@ -28,6 +28,12 @@ prepare() {
   tar -xzf "${srcdir}"/${_realname}-${pkgver}.tar.gz -C "${srcdir}" || true
 
   cd "${srcdir}"/${_realname}-${pkgver}
+
+  # clang 20+ rejects the 'template' keyword without a template argument
+  # list (-Wmissing-template-arg-list-after-template-kw). Same fix as in
+  # newer upstream grpc.
+  sed -i 's/Traits::template CallSeqFactory/Traits::CallSeqFactory/' \
+    src/core/lib/promise/detail/basic_seq.h
 }
 
 build() {
@@ -52,6 +58,11 @@ build() {
     *-x86_64*)
       # https://github.com/msys2/MINGW-packages/issues/8984
       LDFLAGS+=" -Wl,--disable-dynamicbase,--default-image-base-low"
+      # The libstdc++-6.dll from the newer msys2 gcc-libs is not ABI
+      # compatible with our gcc, which makes the freshly built
+      # grpc_cpp_plugin.exe fail with STATUS_ENTRYPOINT_NOT_FOUND when
+      # protoc runs it during this build. Link the runtime statically.
+      LDFLAGS+=" -static-libgcc -static-libstdc++"
     ;;
   esac
 
