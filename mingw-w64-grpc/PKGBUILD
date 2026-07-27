@@ -58,6 +58,11 @@ build() {
     *-x86_64*)
       # https://github.com/msys2/MINGW-packages/issues/8984
       LDFLAGS+=" -Wl,--disable-dynamicbase,--default-image-base-low"
+      # The libstdc++-6.dll from the newer msys2 gcc-libs is not ABI
+      # compatible with our gcc, which makes the freshly built
+      # grpc_cpp_plugin.exe fail with STATUS_ENTRYPOINT_NOT_FOUND when
+      # protoc runs it during this build. Link the runtime statically.
+      LDFLAGS+=" -static-libgcc -static-libstdc++"
     ;;
   esac
 
