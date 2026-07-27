@@ -26,9 +26,18 @@ options=("staticlibs" "strip" "!buildflags")
 source=("https://github.com/apache/arrow/releases/download/apache-arrow-${pkgver}/apache-arrow-${pkgver}.tar.gz"
         "bcrypt-compat.h")
 sha256sums=("12afc2dc8137bdd4a68876cec939f664c9d55cfc7b75f55b45163ebb4e344d81"
-            "5c0098c7b423fa6a8fc37fb31165f649e37a9f4014d3f3043df798629af6b697")
+            "9b8147c45b9d2a2c69cb86bdc178f2a547bff22cd020e924aed7c3d6cccade08")
 
 cpp_build_dir=build-${CARCH}-cpp
+
+prepare() {
+  cd "${srcdir}"/apache-${_realname}-${pkgver}
+  # xsimd 14.2.0 includes the MSVC-only <arm64_neon.h> on Windows aarch64,
+  # which mingw-w64 toolchains don't provide. Fixed upstream in xsimd 14.3.0.
+  sed -i -e 's/^ARROW_XSIMD_BUILD_VERSION=.*/ARROW_XSIMD_BUILD_VERSION=14.3.0/' \
+         -e 's/^ARROW_XSIMD_BUILD_SHA256_CHECKSUM=.*/ARROW_XSIMD_BUILD_SHA256_CHECKSUM=b3d50e7a73fbf4642ceef30131c93414901d69eee41c2a5302db650b03e2c792/' \
+      cpp/thirdparty/versions.txt
+}
 
 build() {
   ARROW_CPP_DIR="${srcdir}/apache-${_realname}-${pkgver}/cpp"
