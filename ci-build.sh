@@ -28,14 +28,15 @@ pacman --noconfirm --needed -Sdd ${MINGW_PACKAGE_PREFIX}-{gcc-libs,libwinpthread
 sed -i 's/-Wp,-D_FORTIFY_SOURCE=2//g' /etc/makepkg_mingw.d/*.conf
 sed -i 's/-fstack-protector-strong//g' /etc/makepkg_mingw.d/*.conf
 
-# Disable newish libc++ features
+# On clang we do not have a seprate gcc-libs and headers packages.
+# However we may need a recent libc++.dll at build time, but we do not want the
+# headers/static libs from the upstream msys2 package. So only extract its bin dir.
 if [ "$MINGW_ARCH" != "ucrt64" ]; then
-pacman --noconfirm --needed -Sdd $MINGW_ARCH/${MINGW_PACKAGE_PREFIX}-libc++
-echo "Patching libc++......."
-sed -i 's/_IN_LLVM_23 1/_IN_LLVM_23 0/' /$MINGW_ARCH/include/c++/v1/__configuration/availability.h
-sed -i 's/_IN_LLVM_22 1/_IN_LLVM_22 0/' /$MINGW_ARCH/include/c++/v1/__configuration/availability.h
-sed -i 's/_IN_LLVM_21 1/_IN_LLVM_21 0/' /$MINGW_ARCH/include/c++/v1/__configuration/availability.h
-sed -i 's/_IN_LLVM_20 1/_IN_LLVM_20 0/' /$MINGW_ARCH/include/c++/v1/__configuration/availability.h
+pacman --noconfirm -Sddw $MINGW_ARCH/${MINGW_PACKAGE_PREFIX}-libc++
+pkgfile=$(basename $(pacman -Sddp $MINGW_ARCH/${MINGW_PACKAGE_PREFIX}-libc++))
+echo "Extracting ${MINGW_ARCH}/bin from ${pkgfile}"
+tar -xvf "/var/cache/pacman/pkg/${pkgfile}" -C / "${MINGW_ARCH}/bin"
+unset pkgfile
 fi
 
 # Initiate git
