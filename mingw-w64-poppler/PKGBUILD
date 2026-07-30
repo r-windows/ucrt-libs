@@ -1,7 +1,7 @@
 _realname=poppler
 pkgbase=mingw-w64-${_realname}
 pkgname="${MINGW_PACKAGE_PREFIX}-${_realname}"
-pkgver=26.04.0
+pkgver=26.07.0
 pkgrel=1
 pkgdesc="PDF rendering library based on xpdf 3.0 (mingw-w64)"
 arch=('any')
@@ -10,7 +10,8 @@ license=("GPL")
 makedepends=("${MINGW_PACKAGE_PREFIX}-cmake"
              "${MINGW_PACKAGE_PREFIX}-gcc"
              "${MINGW_PACKAGE_PREFIX}-glib2"
-             "${MINGW_PACKAGE_PREFIX}-pkg-config")
+             "${MINGW_PACKAGE_PREFIX}-pkg-config"
+             "git")
 depends=("${MINGW_PACKAGE_PREFIX}-cairo"
          "${MINGW_PACKAGE_PREFIX}-freetype"
          "${MINGW_PACKAGE_PREFIX}-lcms2"
@@ -20,12 +21,14 @@ depends=("${MINGW_PACKAGE_PREFIX}-cairo"
          "${MINGW_PACKAGE_PREFIX}-openjpeg2"
          "${MINGW_PACKAGE_PREFIX}-poppler-data"
          "${MINGW_PACKAGE_PREFIX}-zlib")
+
+_test_commit=46785c9a414d8918d8d4c55d3498258c7eac86c3
 source=(https://poppler.freedesktop.org/${_realname}-${pkgver}.tar.xz{,.sig}
-        test::git+https://gitlab.freedesktop.org/poppler/test.git#commit=ff3133cdb6cb496ee1d2c3231bfa35006a5e8410
+        "test::git+https://gitlab.freedesktop.org/poppler/test.git#commit=${_test_commit}"
         '0001-nopython-generate-enums.patch')
-sha256sums=('b0955163114af96bc0106f68cb24daf973a629462453d8b82775f81b0d4e0693'
+sha256sums=('304832f48f8a47fdca90c6b6d1f684e68f37c10c9a0726f345f4ca9df4ca01e2'
             'SKIP'
-            '0efc9bd1797f0f0dfa514d4109e82c99d7e98c3e95587c70945508493074fcdf'
+            '982f8d137e8210a699a22b3615cafef85ded5810a9ac4a6d145944e764f29b9b'
             '315356263b5ebee5431a2e079ac76492a8919a04a798f6c6d53c64f44b433db6')
 validpgpkeys=('CA262C6C83DE4D2FB28A332A3A6A4DB839EAA6D7')
 
