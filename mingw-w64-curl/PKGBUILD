@@ -2,7 +2,7 @@
 _realname=curl
 pkgbase=mingw-w64-${_realname}
 pkgname="${MINGW_PACKAGE_PREFIX}-${_realname}"
-pkgver=8.14.1
+pkgver=8.14.2
 pkgrel=1
 pkgdesc="Command line tool and library for transferring data with URLs. (mingw-w64)"
 arch=('any')
@@ -18,12 +18,12 @@ depends=("${MINGW_PACKAGE_PREFIX}-libssh2"
          "${MINGW_PACKAGE_PREFIX}-openssl")
 
 options=('staticlibs')
-source=("${url}/download/${_realname}-${pkgver}.tar.xz"
+source=("https://github.com/curl/curl/archive/refs/tags/rocksolid-8.14.2.tar.gz"
         "disable-cainfo-for-schannel.patch"
         "0001-Make-cURL-relocatable.patch"
         "0002-nghttp2-static.patch"
         "0004-more-static-fixes.patch")
-sha256sums=('f4619a1e2474c4bbfedc88a7c2191209c8334b48fa1f4e53fd584cc12e9120dd'
+sha256sums=('9d525ca5517586133ff656124a83e577a4dc4d269be3b087e50d82f97cdd2f68'
             'SKIP'
             'c4e6bfd5b58f944d75293128effbd22fe42ee0131b915d9230ceb3c004c0322d'
             'SKIP'
