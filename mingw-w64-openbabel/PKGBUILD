@@ -1,0 +1,86 @@
+# Contributor: Mehdi Chinoune <mehdi.chinoune@hotmail.com>
+
+_realname=openbabel
+pkgbase=mingw-w64-${_realname}
+pkgname=("${MINGW_PACKAGE_PREFIX}-${_realname}")
+pkgver=3.1.1
+pkgrel=1
+pkgdesc="A chemical toolbox designed to speak the many languages of chemical data (static, mingw-w64)"
+arch=('any')
+mingw_arch=('mingw64' 'ucrt64' 'clang64' 'clangarm64')
+url='https://openbabel.org'
+msys2_repository_url='https://github.com/openbabel/openbabel'
+license=('spdx:GPL-2.0-only')
+depends=("${MINGW_PACKAGE_PREFIX}-zlib")
+makedepends=("${MINGW_PACKAGE_PREFIX}-cc"
+             "${MINGW_PACKAGE_PREFIX}-cmake"
+             "${MINGW_PACKAGE_PREFIX}-ninja"
+             "${MINGW_PACKAGE_PREFIX}-eigen3"
+             "${MINGW_PACKAGE_PREFIX}-rapidjson")
+source=("https://github.com/openbabel/openbabel/releases/download/openbabel-${pkgver//./-}/openbabel-${pkgver}-source.tar.bz2"
+        "001-fix-build-on-mingw.patch"
+        "002-fix-build-with-eigen-5.patch")
+sha256sums=('a6ec8381d59ea32a4b241c8b1fbd799acb52be94ab64cdbd72506fb4e2270e68'
+            '0ba5dcff644581608c3342ec777f12aa40dba1efdabd09709d3ad771c126d718'
+            'f451faa0598aaaf4d7a1e03be22077ab9444ead3661db0a38c692c6828e08179')
+
+prepare() {
+  cd ${_realname}-${pkgver}
+  sed -e '/SET CMP0042 OLD/d' -i CMakeLists.txt # Fix build with cmake 4
+  patch -p1 -i "${srcdir}"/001-fix-build-on-mingw.patch
+  patch -p1 -i "${srcdir}"/002-fix-build-with-eigen-5.patch
+}
+
+build() {
+  declare -a _extra_config
+  if check_option "debug" "n"; then
+    _extra_config+=("-DCMAKE_BUILD_TYPE=Release")
+  else
+    _extra_config+=("-DCMAKE_BUILD_TYPE=Debug")
+  fi
+
+  # Static build: all formats and plugins are compiled into libopenbabel.a
+  # Runtime deps are limited to zlib; eigen3 and rapidjson are header-only.
+  CXXFLAGS+=" -Wno-deprecated-declarations" \
+  MSYS2_ARG_CONV_EXCL="-DCMAKE_INSTALL_PREFIX=" \
+    "${MINGW_PREFIX}"/bin/cmake.exe -Wno-author -Wno-dev \
+      -GNinja \
+      -DCMAKE_INSTALL_PREFIX="${MINGW_PREFIX}" \
+      -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
+      "${_extra_config[@]}" \
+      -DBUILD_SHARED=OFF \
+      -DBUILD_GUI=OFF \
+      -DENABLE_OPENMP=OFF \
+      -DWITH_STATIC_INCHI=ON \
+      -DWITH_STATIC_LIBXML=OFF \
+      -DWITH_COORDGEN=OFF \
+      -DWITH_MAEPARSER=OFF \
+      -DWITH_JSON=ON \
+      -DCMAKE_DISABLE_FIND_PACKAGE_LibXml2=ON \
+      -DCMAKE_DISABLE_FIND_PACKAGE_Cairo=ON \
+      -DCMAKE_DISABLE_FIND_PACKAGE_wxWidgets=ON \
+      -DCMAKE_DISABLE_FIND_PACKAGE_Boost=ON \
+      -DOPTIMIZE_NATIVE=OFF \
+      -DENABLE_TESTS=OFF \
+      -DEIGEN3_INCLUDE_DIR=${MINGW_PREFIX}/include/eigen3 \
+      -S "${_realname}-${pkgver}" \
+      -B "build-${MSYSTEM}"
+
+  "${MINGW_PREFIX}"/bin/cmake.exe --build "build-${MSYSTEM}"
+}
+
+package() {
+  DESTDIR="${pkgdir}" "${MINGW_PREFIX}"/bin/cmake.exe --install "build-${MSYSTEM}"
+
+  install -Dm644 "${srcdir}"/${_realname}-${pkgver}/COPYING \
+    "${pkgdir}"${MINGW_PREFIX}/share/licenses/${_realname}/COPYING
+
+  # Static linking also needs the bundled inchi library and zlib
+  sed -e "s|-lopenbabel|-lopenbabel -linchi -lz|" \
+    -i "${pkgdir}"${MINGW_PREFIX}/lib/pkgconfig/openbabel-3.pc
+
+  local PREFIX_WIN=$(cygpath -wm ${MINGW_PREFIX})
+  for _f in "${pkgdir}"${MINGW_PREFIX}/lib/cmake/openbabel3/*.cmake; do
+    sed -e "s|${PREFIX_WIN}|\$\{_IMPORT_PREFIX\}|g" -i ${_f}
+  done
+}
