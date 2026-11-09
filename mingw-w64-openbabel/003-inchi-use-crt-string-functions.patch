@@ -1,0 +1,22 @@
+--- a/include/inchi/ichicomp.h
++++ b/include/inchi/ichicomp.h
+@@ -70,7 +70,7 @@
+  /* implementation is located in util.c */
+ /*#if ( !defined(_MSC_VER) || defined(__STDC__) && __STDC__ == 1 )*/
+ 
+-#if ( defined(COMPILE_ADD_NON_ANSI_FUNCTIONS) || defined(__STDC__) && __STDC__ == 1 )
++#if ( defined(COMPILE_ADD_NON_ANSI_FUNCTIONS) || defined(__STDC__) && __STDC__ == 1 ) && !defined(_WIN32)
+ 
+ /* support (VC++ Language extensions) = OFF && defined(COMPILE_ANSI_ONLY) */
+ int   memicmp (const void*, const void*, size_t);
+--- a/src/formats/libinchi/util.c
++++ b/src/formats/libinchi/util.c
+@@ -1112,7 +1112,7 @@
+ /*************************************************************************/
+ #define __MYTOLOWER(c) ( ((c) >= 'A') && ((c) <= 'Z') ? ((c) - 'A' + 'a') : (c) )
+ 
+-#if ( defined(COMPILE_ADD_NON_ANSI_FUNCTIONS) || defined(__STDC__) && __STDC__ == 1 )
++#if ( defined(COMPILE_ADD_NON_ANSI_FUNCTIONS) || defined(__STDC__) && __STDC__ == 1 ) && !defined(_WIN32)
+ /* support (VC++ Language extensions) = OFF && defined(COMPILE_ANSI_ONLY) */
+ int memicmp ( const void * p1, const void * p2, size_t length )
+ {
