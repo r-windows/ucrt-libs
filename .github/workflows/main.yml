@@ -78,7 +78,7 @@ jobs:
           ls -ltrR
           eval $(ssh-agent -s)
           ssh-add <(echo "$STAGINGKEY")
-          echo 'put -pr .' | sftp -oStrictHostKeyChecking=no "${STAGINGUSER}@ftp.opencpu.org:/msys2"
+          echo 'put -pr .' | sftp -oStrictHostKeyChecking=no "${STAGINGUSER}@dev.opencpu.org:/msys2"
           exit ${PIPESTATUS[1]}
         env:
           STAGINGUSER: ${{ secrets.STAGINGUSER }}
